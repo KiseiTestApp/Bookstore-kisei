@@ -1,0 +1,214 @@
+"use client"
+
+import React, {createContext, useContext, useEffect, useState} from "react";
+import {onAuthStateChanged, updateProfile, User} from "firebase/auth";
+import {auth, db} from "@/lib/firebase/config";
+import {doc, getDoc, setDoc} from "firebase/firestore";
+import {signInWithEmailAndPassword} from "@firebase/auth";
+import {createUserWithEmailAndPassword} from "@firebase/auth";
+import {updatePassword, reauthenticateWithCredential, EmailAuthProvider, getAuth} from "firebase/auth";
+import {useSnackbar} from "@/app/context/SnackbarContext";
+import {getAuthErrorMessage} from "@/app/types/authErrors";
+import {useRouter} from "next/navigation";
+
+type AuthContextType = {
+    user: User | null;
+    role: string | null;
+    loading: boolean;
+    signIn: (email: string, password: string) => Promise<void>;
+    signUp: (email: string, password: string, username: string, phoneNumber: string) => void;
+    adminSignIn: (email: string, password: string) => void;
+    changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{success: boolean, error?: any}>;
+    logout: () => Promise<void>;
+    error: string | null;
+};
+
+const AuthContext = createContext<AuthContextType>({
+    user: null,
+    role: null,
+    loading: true,
+    signIn: async () => {},
+    signUp: async () => {},
+    adminSignIn: async () => {},
+    changePassword: async () => ({success: false}),
+    logout: async () => {},
+    error: null,
+});
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [role, setRole] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+    const {showSnackbar} = useSnackbar();
+
+    //Kiểm tra tình trạng của user trên hệ thống
+    useEffect(() => {
+        const unsubcribe = onAuthStateChanged(auth, async (user) => {
+            setUser(user);
+            if (user) {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnapshot = await getDoc(userDocRef);
+                setRole(userDocSnapshot.exists() ? userDocSnapshot.data()?.role : "user");
+            } else {
+                setRole(null);
+            }
+            setLoading(false);
+        });
+        return () => {
+            console.log("AuthProvider unsubcribe", unsubcribe);
+            unsubcribe();
+        }
+    }, []);
+
+    //Chức năng đăng nhập cho khách hàng
+    const signIn = async (email: string, password: string) : Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const idToken = await user.getIdToken();
+            document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
+        } catch (err: any) {
+            const errorMessage = getAuthErrorMessage(err.code) || "Đăng nhập thất bại";
+            showSnackbar(errorMessage, "error");
+            throw new Error(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //Chức năng đăng ký
+    const signUp = async (
+        email: string,
+        password: string,
+        username: string,
+        phoneNumber: string,
+    ) : Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            await updateProfile(user, {displayName: username});
+            await setDoc(doc(db, "users", user.uid), {
+                email,
+                username,
+                phoneNumber,
+                role: 'user',
+                createdAt: new Date().toISOString(),
+            });
+            const idToken = await user.getIdToken();
+            document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
+        } catch (err: any) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //Chức năng đăng nhập cho quản trị viên
+    const adminSignIn = async (email: string, password: string) : Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+            const userRole = userDocSnapshot.data()?.role;
+            if (userRole !== "admin") {
+                await auth.signOut();
+                showSnackbar("Từ chối truy cập. Người dùng không phải Admin", "error");
+            }
+            const idToken = await user.getIdToken();
+            document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
+            showSnackbar("Đăng nhập thành công", "success")
+            setTimeout(() => router.push("/admin/dashboard"), 500);
+        } catch (err: any) {
+            const errorMessage = getAuthErrorMessage(err.code);
+            setError(errorMessage);
+            showSnackbar(errorMessage, "error");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //Chức năng đổi mật khẩu
+    const changePassword = async (
+        currentPassword: string,
+        newPassword: string,
+        confirmPassword: string
+    ): Promise<{success: boolean, error?: any}> => {
+        try {
+            const auth = getAuth();
+            const currentUser = auth.currentUser;
+
+            if (!currentUser || !user?.email) {
+                showSnackbar("Yêu cầu xác thực lại tài khoản", "error");
+                return {success: false, error: "No authenticated user"};
+            }
+
+            if (newPassword !== confirmPassword) {
+                showSnackbar("Mật khẩu mới không trùng nhau", "error");
+                return {success: false, error: "Passwords don't match"};
+            }
+
+            const credential = EmailAuthProvider.credential(
+                user.email,
+                currentPassword
+            );
+            await reauthenticateWithCredential(currentUser, credential);
+            await updatePassword(currentUser, newPassword);
+            await currentUser.getIdToken(true);
+            showSnackbar("Đổi mật khẩu thành công", "success");
+            return {success: true};
+        } catch (err: any) {
+            let errorMessage = "Password change failed";
+            if (err.code) {
+                errorMessage = getAuthErrorMessage(err.code);
+                if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+                    showSnackbar("Sai mật khẩu hiện tại. Vui lòng đăng nhập lại", "error");
+                    await auth.signOut();
+                    return {success: false, error: "Invalid credentials - signed out"};
+                }
+            }
+
+            showSnackbar(errorMessage, "error");
+            return {success: false, error: err};
+        }
+    }
+
+    //Chức năng đăng xuất
+    const logout = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            await auth.signOut();
+            setUser(null);
+            setRole(null);
+            document.cookie = 'idToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; Samesite=Strict';
+            localStorage.removeItem('idToken');
+            router.push('/account/sign-in');
+            showSnackbar("Đăng xuất thành công", "success");
+        } catch (err: any) {
+            const errorMessage = getAuthErrorMessage(err.code) || 'Logout failed';
+            setError(errorMessage);
+            showSnackbar(errorMessage, "error");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <AuthContext.Provider value={{ user, role, loading, signIn, signUp, adminSignIn, error, changePassword, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export const useAuth = () => useContext(AuthContext);

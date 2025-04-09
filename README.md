@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# [Read&Chill] - Website bán sách online
 
-## Getting Started
+## 1 ☀️ Tính năng
 
-First, run the development server:
+Webiste **Read&Chill** cung cấp các tính năng như sau:
+- **Tìm kiếm sách**: tìm kiếm theo tên sách, tác giả
+- **Tài khoản**: tạo tài khoản, đăng nhập, và quản lý thông tin cá nhân trên trang web
+- **Giỏ hàng**: Thêm sách/xóa sách khỏi giỏ và kiểm tra checkout
+- **Admin Dashboard**: quản lý sách, đơn hàng, và khách hàng trên trang web cho admin
 
+## 2 🛠️ Các công nghệ được sử dụng
+
+- **Frontend**:
+    - Ngôn ngữ: TypeScript + React
+    - Framework: [Next.js 15](https://nextjs.org/)
+    - UI Library: 
+      - [Material UI](https://mui.com/)
+      - [Embla Carousel](https://www.embla-carousel.com/)
+      - [Material Design Icons](https://pictogrammers.com/library/mdi/)
+      - [Tailwind](https://tailwindcss.com/)
+      - [Typesense](https://typesense.org/)
+- **Backend**:
+  - Nền tảng: 
+    - Firebase [Authentication, Realtime Database]
+    - Typesense Cloud 
+- **Công cụ quản lý gói cài đặt**:
+  - Nền tảng: Node.js
+
+## 3 ✈️ Các bước triển khai
+
+1. **Chuẩn bị môi trường**
+
+- Cài đặt Node.js 20 trên máy
+- Cấu hình Firebase Project trên [Firebase Console](https://console.firebase.google.com)
+- 
+2. **Phát triển Frontend**
+
+- Tạo các component chính: Trang chủ, Giỏ hàng, Thanh toán, Quản lý tài khoản, Thông tin sách, Admin Dashboard.
+- Tích hợp Firebase SDK cho Authentication (xác thực) và Firestore Firebase (cơ sở dữ liệu)
+- Tối ưu giao diện thân thiện đối với người sử dụng, hỗ trợ responsive trên các thiết bị phổ biến
+
+3. **Phát triển backend**
+
+- Thiết lập Firebase Authentication để quản lý đăng nhập
+- Cấu hình Firestore để lưu trữ:
+  - Sách (books)
+  - Người dùng (users)
+  - Địa chỉ (addresses) (subcollection của users)
+  - Đơn hàng (orders)
+  - Giỏ hàng (cart)
+- Triển khai Typesense bằng cách cài đặt Typesense cho Firestore và làm theo các bước được hướng dẫn
+
+4. **Triển khai sản phẩm**
+
+- Triển khai cơ sở dữ liệu và lưu trữ tệp trên Firebase Firestore và Firebase Storage
+- Triển khai website trên Firebase Hosting hoặc Vercel Deploy
+
+Nếu cần thêm hướng dẫn chi tiết, vui lòng tham khảo tài liệu hướng dẫn chính thức của
+[Firebase](https://firebase.google.com/docs) và [Vercel](https://vercel.com/docs/frameworks/nextjs)
+
+## 4 📃 Cài đặt dự án
+
+1. **Cài đặt môi trường**
+- Đảm bảo đã cài đặt [Node.js](https://nodejs.org/en/download) phiên bản 20 hoặc cao hơn
+2. **Cấu hình Firebase**
+- Tạo Firebase Project mới trên Firebase Console
+- Cấu hình và thiết lập Firestore Database, Firebase Authentication và Firebase Storage
+- Tải tệp cấu hình `firebaseConfig` từ Firebase cung cấp và thay thế trong project
+- Tải tệp cấu hình `typesenseConfig` từ Typesense và thay thế API key trong file `.env.local`
+3. **Cài đặt phụ thuộc**
+- Frontend: 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+$ npm install
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Backend:
+  - Firebase sử dụng trực tiếp
+  - Typesense:
+    - Cài đặt Typesense client:
+    ```bash
+    npm install typesense @babel/runtime
+    npm install react-instantsearch
+    ```
+    - Cấu hình file client:
+    ```
+    const typesenseClient = new Typesense.Client({
+    apiKey: process.env.NEXT_PUBLIC_TYPESENSE_SEARCH_ONLY_KEY  // api key,
+    nodes: [
+        {
+            host: process.env.NEXT_PUBLIC_TYPESENSE_HOST // hoặc ''localhost',
+            port: 443, //hoặc '8108' nếu sử dụng localhost
+            protocol: 'https',
+        }
+    ],
+    connectionTimeoutSeconds: 2,
+    })
+    ```
+4. Chạy dự án cục bộ
+```bash
+npm next dev 
+```
+- Ứng dụng chạy tại: `https//localhost:3000`
+5. Triển khai sản phẩm
+- Build project Next.js:
+```bash
+next start
+next build
+```
