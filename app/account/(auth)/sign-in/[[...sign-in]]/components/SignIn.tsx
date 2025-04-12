@@ -2,35 +2,38 @@
 
 import {Button, TextField, Typography} from "@mui/material";
 import {Link} from "@mui/material";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {useSnackbar} from "@/app/context/SnackbarContext";
 import Image from "next/image";
+import {signInSchema, SignInFormData} from "@/lib/validation/signInSchema";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+
 
 export default function SignIn() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<SignInFormData>({
+        resolver: zodResolver(signInSchema),
+        mode: 'onBlur',
+    });
     const {signIn, loading, error} = useAuth();
     const {showSnackbar} = useSnackbar();
     const router = useRouter();
-
-    const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsProcessing(true);
+    const onSubmit = async (data: SignInFormData) => {
         try {
-            await signIn(email, password);
-            showSnackbar("Đăng nhập thành công", "success", {vertical: "top", horizontal: "center"});
-            setTimeout(() => router.push("/"), 2000);
-        } catch (err) {
-            showSnackbar(
-                err instanceof Error ? err.message : "Đăng nhập thất bại", "error"
-            );
-        } finally {
-            setIsProcessing(false);
+            await signIn(data.email, data.password);
+            showSnackbar('Đăng nhập thành công', 'success', {
+                vertical: 'top', horizontal: 'center'
+            })
+            setTimeout(() => router.push('/'), 2500);
+        } catch (error) {
+            console.log(error);
         }
-    };
+    }
 
     return (
         <div className="flex h-screen w-full">
@@ -48,32 +51,33 @@ export default function SignIn() {
                 <Typography variant="h5" gutterBottom>
                     Đăng nhập
                 </Typography>
-                <form onSubmit={handleSignIn}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <TextField
+                        {...register('email')}
                         label="Đăng nhập bằng email"
                         type="email"
-                        value={email}
-                        onChange={(e)=> setEmail(e.target.value)}
                         fullWidth
                         variant="standard"
                         margin="normal"
-                        required
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                     />
                     <TextField
                         label="Mật khẩu"
+                        {...register('password')}
                         type="password"
                         fullWidth
                         variant="standard"
-                        value={password}
-                        onChange={(e)=> setPassword(e.target.value)}
                         margin="normal"
                         required
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
                     />
                     <div className="mt-4">
                         <Button
                             variant="contained"
                             fullWidth type="submit"
-                            disabled={loading || isProcessing}
+                            disabled={loading}
                             loading={loading}
                             loadingPosition="start"
                         >

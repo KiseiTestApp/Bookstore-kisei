@@ -21,7 +21,7 @@ export default async function PopularBooksCard() {
                     <Grid size={1}>
                         <Image
                             src={book.imageUrl || ''}
-                            alt={book.title}
+                            alt={book.title || 'No image found'}
                             width={60}
                             height={60}
                         />

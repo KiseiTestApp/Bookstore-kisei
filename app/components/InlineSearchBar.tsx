@@ -97,7 +97,7 @@ export default function InlineSearch({className}: InlineSearchProps) {
                                         {book.imageUrl && (
                                             <Image
                                                 src={book.imageUrl}
-                                                alt={book.title}
+                                                alt={book.title || 'No image found'}
                                                 className="w-10 h-14 object-cover mr-3"
                                                 width={600}
                                                 height={600}

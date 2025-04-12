@@ -15,6 +15,7 @@ interface CartItem {
     bookId: string;
     imageUrl: string;
 }
+
 export const useCart = () => {
     const {user} = useAuth();
     const [cart, setCart] = useState<{

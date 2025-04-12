@@ -1,10 +1,10 @@
 import {db} from '@/lib/firebase/config';
 import {doc, addDoc, collection, runTransaction, increment} from "firebase/firestore";
-import {OrderFormData} from "@/app/types/order";
+import {OrderDocument} from "@/app/types/order";
 import {CartItem} from "@/app/utils/cart/fetchCartItems";
 
 export const submitOrder = async (
-    orderForm: OrderFormData,
+    orderForm: OrderDocument,
     cartItems: CartItem[],
     totalPrice: number,
     userId: string | undefined,
@@ -40,7 +40,7 @@ export const submitOrder = async (
             const orderCollection = collection(db, "orders");
             await addDoc(orderCollection, orderData);
 
-            //2: Thêm trường để ghi lại số lượng sản phẩm được bán trong order vào trong books
+            //2: Thêm và cập nhật trường để ghi lại số lượng sản phẩm được bán
             const bookUpdates = cartItems.map(async (item) => {
                 const bookRef = doc(db, "books", item.bookId);
                 transaction.update(bookRef, {

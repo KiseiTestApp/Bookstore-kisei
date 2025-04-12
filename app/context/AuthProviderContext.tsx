@@ -123,16 +123,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (userRole !== "admin") {
                 await auth.signOut();
                 showSnackbar("Từ chối truy cập. Người dùng không phải Admin", "error");
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                router.push("/no-access");
+                return;
             }
-            const idToken = await user.getIdToken();
+            const idToken = await user.getIdToken(true);
             document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
             showSnackbar("Đăng nhập thành công", "success")
-            setTimeout(() => router.push("/admin/dashboard"), 500);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            router.replace("/admin/dashboard");
         } catch (err: any) {
-            const errorMessage = getAuthErrorMessage(err.code);
-            setError(errorMessage);
-            showSnackbar(errorMessage, "error");
-            throw err;
+            setLoading(false);
+            if (err.code && err.code.startsWith('auth/')) {
+                const errorMessage = getAuthErrorMessage(err.code);
+                setError(errorMessage);
+                showSnackbar(errorMessage, "error");
+            }
+            else {
+                const errorMessage = err.message || 'Đã xảy ra lỗi không xác định';
+                setError(errorMessage);
+                showSnackbar(errorMessage, "error");
+            }
         } finally {
             setLoading(false);
         }

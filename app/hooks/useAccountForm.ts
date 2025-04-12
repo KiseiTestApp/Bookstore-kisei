@@ -4,6 +4,7 @@ import {useSnackbar} from "@/app/context/SnackbarContext";
 import {useEffect, useState, useCallback} from "react";
 import {doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "@/lib/firebase/config";
+import {useForm} from "react-hook-form";
 
 export interface FormData {
     username: string;
@@ -20,18 +21,17 @@ export const useAccountForm = (userId: string | undefined) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [isEditing, setIsEditing] = useState(false);
     const [updating, setUpdating] = useState(false);
-    const [formData, setFormData] = useState({
-        username: "",
-        phoneNumber: "",
-        email: "",
-        gender: '',
-        birthday: "",
-    })
-    const [originalData, setOriginalData] = useState({...formData})
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        setValue,
+        formState: {errors},
+    } = useForm<FormData>();
 
     const loadUserData = useCallback(async () => {
         if (!userId) return;
-
         // * Lấy dữ liệu từ Firebase
         try {
             const userRef = doc(db, "users", userId);
@@ -45,8 +45,7 @@ export const useAccountForm = (userId: string | undefined) => {
                     gender: userDoc.data().gender || "",
                     birthday: userDoc.data().birthday || "",
                 };
-                setFormData(initialData);
-                setOriginalData(initialData);
+                reset(initialData);
             }
         } catch (error) {
             // Catch lỗi trong trường hợp không có thông tin người dùng
@@ -59,29 +58,17 @@ export const useAccountForm = (userId: string | undefined) => {
 
     useEffect(() => {
         loadUserData();
-    }, [loadUserData]);
-
-    // Phương thức set dữ liệu
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }))
-    }
+    }, [userId]);
 
     // Set dữ liệu cho trường giới tính
     const handleGenderChange = (value: string) => {
-        setFormData(prev => ({
-            ...prev,
-            gender: value,
-        }))
+        setValue('gender', value)
     }
 
     // Bật/tắt khả năng chỉnh sửa
     const toggleEdit = () => {
         if (isEditing) {
-            handleSubmit()
+            handleSubmit(onSubmit);
         } else {
             setIsEditing(true);
         }
@@ -89,26 +76,34 @@ export const useAccountForm = (userId: string | undefined) => {
 
     // Hủy chỉnh sửa
     const cancelEdit = () => {
-        setFormData({...originalData})
+        reset();
         setIsEditing(false);
     }
 
     // Ghi dữ liệu mới lên lại Firebase
-    const handleSubmit = async () => {
+    const onSubmit = async (data: FormData) => {
         if (!userId) return;
         setUpdating(true);
         try {
-            await updateDoc(doc(db, "users", userId), formData);
+            await updateDoc(doc(db, "users", userId), data as Record<string, any>);
             showSnackbar("Cập nhật hồ sơ cá nhân thành công", "success")
-            setOriginalData({...formData})
             setIsEditing(false);
         } catch (error) {
             console.error("Error updating profile", error);
             showSnackbar("Đã xảy ra lỗi trong khi cập nhật hồ sơ", "error");
-            setFormData({...originalData})
         } finally {
             setUpdating(false);
         }
     }
-    return {loading, isEditing, updating, formData, handleChange, handleGenderChange, toggleEdit, cancelEdit};
+    return {
+        loading,
+        isEditing,
+        updating,
+        register,
+        errors,
+        handleGenderChange,
+        toggleEdit,
+        cancelEdit,
+        handleSubmit: handleSubmit(onSubmit)
+    };
 }

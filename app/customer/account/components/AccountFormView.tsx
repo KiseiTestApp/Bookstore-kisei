@@ -13,34 +13,42 @@ import {
 import Stack from "@mui/material/Stack";
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-
+import {UseFormRegister, FieldErrors} from 'react-hook-form'
 
 interface AccountFormViewProps {
     loading: boolean;
     isEditing: boolean;
     updating: boolean;
-    formData: {
+    register: UseFormRegister<{
         username: string;
         phoneNumber: string;
         email: string;
         gender: string;
         birthday: string;
-    }
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    }>
+    errors: FieldErrors<{
+        username: string;
+        phoneNumber: string;
+        email: string;
+        gender: string;
+        birthday: string;
+    }>
     handleGenderChange: (value: string) => void;
     toggleEdit: () => void;
     cancelEdit: () => void;
+    handleSubmit: () => void;
 }
 
 export const AccountFormView = ({
     loading,
     isEditing,
     updating,
-    formData,
-    handleChange,
+    register,
+    errors,
     handleGenderChange,
     toggleEdit,
-    cancelEdit
+    cancelEdit,
+    handleSubmit,
 }: AccountFormViewProps) => {
     if (loading) {
         return (
@@ -53,53 +61,53 @@ export const AccountFormView = ({
         <Box>
             <Typography variant="h6">Thông tin tài khoản</Typography>
             <Box marginTop={4}>
-                <Stack component="form" spacing={2}>
+                <Stack component="form" spacing={2} onSubmit={handleSubmit}>
                     <Box display="flex" alignItems="center">
                         <Typography variant="body1" width={240} paddingTop={1}>Họ và tên đầy đủ</Typography>
                         <TextField
+                            {...register('username')}
                             fullWidth
                             name="username"
-                            value={formData.username}
-                            onChange={handleChange}
                             slotProps={{
                                 input: {
                                     readOnly: !isEditing,
                                 }
                             }}
-                            aria-label={formData.username}
                             variant="outlined"
+                            error={!!errors.username}
+                            helperText={errors.username?.message}
                         />
                     </Box>
                     <Box display="flex" alignItems="center">
                         <Typography variant="body1" width={240} paddingTop={1}>Số điện thoại</Typography>
                         <TextField
+                            {...register('phoneNumber')}
                             fullWidth
                             name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
                             slotProps={{
                                 input: {
                                     readOnly: !isEditing,
                                 }
                             }}
-                            aria-label={formData.phoneNumber}
                             variant="outlined"
+                            error={!!errors.phoneNumber}
+                            helperText={errors.phoneNumber?.message}
                         />
                     </Box>
                     <Box display="flex" alignItems="center">
                         <Typography variant="body1" width={240} paddingTop={1}>Email</Typography>
                         <TextField
+                            {...register('email')}
                             fullWidth
                             name="email"
-                            value={formData.email}
-                            onChange={handleChange}
                             slotProps={{
                                 input: {
                                     readOnly: true,
                                 }
                             }}
-                            aria-label={formData.email}
                             variant="outlined"
+                            error={!!errors.email}
+                            helperText={errors.email?.message}
                         />
                     </Box>
                     <Box display="flex" alignItems="center">
@@ -107,7 +115,7 @@ export const AccountFormView = ({
                         <FormControl fullWidth>
                             <InputLabel>Giới tính</InputLabel>
                             <Select
-                                value={formData.gender}
+                                {...register('gender')}
                                 onChange={(e => handleGenderChange(e.target.value as string))}
                                 disabled={!isEditing}
                                 variant="outlined"
@@ -121,17 +129,18 @@ export const AccountFormView = ({
                     <Box display="flex" alignItems="center">
                         <Typography variant="body1" width={240} paddingTop={1}>Ngày sinh</Typography>
                         <TextField
+                            {...register('birthday')}
                             fullWidth
                             type="date"
                             name="birthday"
-                            value={formData.birthday}
-                            onChange={handleChange}
                             slotProps={{
                                 input: {
                                     readOnly: !isEditing,
                                 }
                             }}
                             variant="outlined"
+                            error={!!errors.birthday}
+                            helperText={errors.birthday?.message}
                         />
                     </Box>
                 </Stack>

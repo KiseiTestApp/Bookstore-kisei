@@ -1,20 +1,17 @@
 "use client"
 
 import {Button, TextField, Typography} from "@mui/material";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {useEffect, useState} from "react";
 
 export default function AdminSignIn() {
-    const {adminSignIn, role} = useAuth();
+    const {adminSignIn} = useAuth();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const handleAdminLogin = async () => {
         try {
             await adminSignIn(email, password);
-            if (role !== "admin") redirect("/auth/no-access");
-
         } catch (err: any) {
             console.error("Admin login failed", err.message);
         }

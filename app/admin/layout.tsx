@@ -17,9 +17,9 @@ export default function Layout({ children } : {children: React.ReactNode}) {
     const isNoAccessPage = pathname === "/auth/no-access-page";
     useEffect(() => {
         if (!loading) {
-            if (!user && !isNoAccessPage && !isNoAccessPage) {
+            if (!user && !isSignInPage && !isNoAccessPage) {
                 router.push("/admin/sign-in");
-            } else if (role !== "admin") {
+            } else if (user && role !== "admin" && !isNoAccessPage) {
                 router.push("/auth/no-access")
             }
         }

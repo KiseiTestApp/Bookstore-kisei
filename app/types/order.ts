@@ -10,10 +10,13 @@ interface CustomerData {
 // Địa chỉ
 interface AddressData {
     province: string;
+    provinceName: string;
     district: string;
+    districtName: string;
     ward: string;
+    wardName: string;
     street: string;
-    fullAddress: string;
+    fullAddress?: string;
 }
 
 // Sản phảm trong đơn hàng
@@ -38,7 +41,7 @@ export interface OrderFormData {
 
 // Đơn hàng
 export interface OrderDocument {
-    orderId: string;
+    orderId?: string;
     customer: CustomerData;
     shippingAddress: AddressData;
     items: OrderItems[];

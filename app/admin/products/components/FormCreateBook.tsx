@@ -8,42 +8,38 @@ import {
     IconButton,
     Paper,
     Tooltip,
-    InputAdornment,
-    CircularProgress
+    CircularProgress, FormHelperText
 } from "@mui/material";
 import {useBookWrite} from "@/app/hooks/book/useBookWrite";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Box, Stack} from "@mui/system";
 import Container from "@mui/material/Container";
 import Image from "next/image";
-import {NumericFormat} from "react-number-format";
 import {genresList} from "@/app/admin/components/genresList";
 import {useRouter} from "next/navigation";
-import React from "react";
+import {Controller} from "react-hook-form";
 
 
 export default function FormCreateBook() {
     const {
-        formData,
+        register,
+        control,
+        errors,
         loading,
-        handleInputChange,
         handleImageChange,
         handleImageRemove,
-        submitBook,
+        onSubmit,
+        watch,
     } = useBookWrite();
     const router = useRouter();
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        submitBook();
-    }
+    const imageUrl = watch('imageUrl');
 
     return (
         <div className="flex flex-row gap-4">
-            <form className="flex flex-row grow gap-4" onSubmit={handleSubmit}>
+            <form className="flex flex-row grow gap-4" onSubmit={onSubmit}>
                 <Paper className="p-4 w-full" elevation={1}>
                     <Typography variant="h6">Nội dung sản phẩm</Typography>
-                    <Stack spacing={1.5} className="py-4" >
+                    <Stack spacing={1.5} className="py-4">
                         <TextField
                             id="title"
                             label="Tên sản phẩm"
@@ -52,8 +48,9 @@ export default function FormCreateBook() {
                             fullWidth
                             multiline={true}
                             maxRows={2}
-                            value={formData.title}
-                            onChange={handleInputChange}
+                            error={!!errors.title}
+                            helperText={errors.title?.message}
+                            {...register('title')}
                         />
                         <TextField
                             id="author"
@@ -61,8 +58,9 @@ export default function FormCreateBook() {
                             type="text"
                             size="medium"
                             fullWidth
-                            value={formData.author}
-                            onChange={handleInputChange}
+                            error={!!errors.author}
+                            helperText={errors.author?.message}
+                            {...register('author')}
                         />
                         <TextField
                             id="publisher"
@@ -70,103 +68,68 @@ export default function FormCreateBook() {
                             type="text"
                             size="medium"
                             fullWidth
-                            value={formData.publisher}
-                            onChange={handleInputChange}
+                            error={!!errors.publisher}
+                            helperText={errors.publisher?.message}
+                            {...register('publisher')}
                         />
-
-                        <TextField
-                            id="genre"
-                            select
-                            label="Thể loại"
-                            fullWidth
-                            value={formData.genre}
-                            onChange={(e) => {
-                                handleInputChange({
-                                    target: {
-                                        id: 'genre',
-                                        value: e.target.value
-                                    }
-                                } as React.ChangeEvent<HTMLInputElement>)
-                            }}
-                        >
-                            {genresList.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <NumericFormat
-                            customInput={TextField}
-                            id="publishYear"
-                            label="Năm xuất bản"
-                            fullWidth
-                            value={formData.publishYear}
-                            isAllowed={(values) => {
-                                const {formattedValue} = values;
-                                return formattedValue.length <= 4;
-                            }}
-                            onValueChange={(values) => {
-                                handleInputChange({
-                                    target: {
-                                        id: 'publishYear',
-                                        value: values.value
-                                    }
-                                } as React.ChangeEvent<HTMLInputElement>)
-                            }}
+                        <Controller
+                            name="genre"
+                            control={control}
+                            render={({field}) => (
+                                <TextField {...field} select label="Thể loại" fullWidth error={!!errors.genre}
+                                           helperText={errors.genre?.message}>
+                                    {genresList.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
                         />
-                        <NumericFormat
-                            customInput={TextField}
-                            id="price"
-                            label="Giá tiền"
-                            fullWidth
-                            thousandsGroupStyle={"thousand"}
-                            valueIsNumericString={true}
-                            thousandSeparator=","
-                            slotProps={{
-                                input: {
-                                    endAdornment: <InputAdornment position="end">VND</InputAdornment>
-                                },
-                            }}
-                            value={formData.price}
-                            onValueChange={(values) => {
-                                handleInputChange({
-                                    target: {
-                                        id: 'price',
-                                        value: values.value
-                                    }
-                                } as React.ChangeEvent<HTMLInputElement>)
-                            }}
+                        <Controller
+                            name="publishYear" control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    label='Năm xuất bản'
+                                    error={!!errors.publishYear}
+                                    helperText={errors.publishYear?.message}
+                                />
+                            )}
                         />
-                        <NumericFormat
-                            customInput={TextField}
-                            id="discounted"
-                            label="Giá sau khi giảm"
-                            fullWidth
-                            thousandsGroupStyle={"thousand"}
-                            thousandSeparator=","
-                            slotProps={{
-                                input: {
-                                    endAdornment: <InputAdornment position="end">VND</InputAdornment>
-                                },
-                            }}
-                            value={formData.discounted}
-                            onValueChange={(values) => {
-                                handleInputChange({
-                                    target: {
-                                        id: 'discounted',
-                                        value: values.value
-                                    }
-                                } as React.ChangeEvent<HTMLInputElement>)
-                            }}
+                        <Controller
+                            name="price" control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    label='Giá tiền'
+                                    fullWidth
+                                    error={!!errors.price}
+                                    helperText={errors.price?.message}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="discounted" control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    fullWidth
+                                    type="number"
+                                    label='Giá sau khi giảm'
+                                    error={!!errors.discounted}
+                                    helperText={errors.discounted?.message}
+                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                />
+                            )}
                         />
                         <TextField
-                            id="description"
                             label="Mô tả sản phẩm"
                             fullWidth
                             multiline
                             minRows={3}
-                            value={formData.description}
-                            onChange={handleInputChange}
+                            {...register('description')}
                         />
                     </Stack>
                 </Paper>
@@ -176,7 +139,7 @@ export default function FormCreateBook() {
                             <Typography variant="h6">Ảnh sản phẩm</Typography>
                             <input
                                 accept="image/*"
-                                style={{ display: "none" }}
+                                style={{display: "none"}}
                                 id="image-upload"
                                 type="file"
                                 onChange={handleImageChange}
@@ -189,10 +152,15 @@ export default function FormCreateBook() {
                                     Tải lên ảnh
                                 </Button>
                             </label>
-                            {formData.imageUrl && (
+                            {errors.imageUrl && (
+                                <FormHelperText error>
+                                    {errors.imageUrl.message}
+                                </FormHelperText>
+                            )}
+                            {imageUrl && (
                                 <Box style={{position: 'relative', display: 'inline-block'}}>
                                     <Image
-                                        src={formData.imageUrl}
+                                        src={imageUrl}
                                         alt="Preview"
                                         width={600}
                                         height={600}
@@ -208,7 +176,7 @@ export default function FormCreateBook() {
                                             color="error"
                                             onClick={handleImageRemove}
                                         >
-                                            <DeleteIcon />
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </Tooltip>
                                 </Box>
@@ -223,7 +191,7 @@ export default function FormCreateBook() {
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <CircularProgress size={24} color="inherit" />
+                                    <CircularProgress size={24} color="inherit"/>
                                 ) : (
                                     "Lưu sản phẩm"
                                 )}

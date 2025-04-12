@@ -1,7 +1,7 @@
-import BookDetailPage from "@/app/admin/products/book-detail/components/BookDetailsPage";
+import FormUpdateBook from "@/app/admin/products/components/FormUpdateBook";
 
 export default function Page() {
     return (
-        <BookDetailPage />
+        <FormUpdateBook />
     )
 }

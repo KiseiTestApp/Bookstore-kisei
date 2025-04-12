@@ -10,8 +10,9 @@ export default function AccountClientContent() {
         loading,
         isEditing,
         updating,
-        formData,
-        handleChange,
+        register,
+        errors,
+        handleSubmit,
         handleGenderChange,
         toggleEdit,
         cancelEdit
@@ -21,11 +22,12 @@ export default function AccountClientContent() {
             loading={loading}
             isEditing={isEditing}
             updating={updating}
-            formData={formData}
-            handleChange={handleChange}
+            register={register}
+            errors={errors}
             handleGenderChange={handleGenderChange}
             toggleEdit={toggleEdit}
             cancelEdit={cancelEdit}
+            handleSubmit={handleSubmit}
         />
     )
 }

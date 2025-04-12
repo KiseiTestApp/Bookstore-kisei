@@ -64,7 +64,7 @@ export default function Header() {
     const EXCLUDED_PATHS = [
         "/account/sign-in",
         "/account/sign-up",
-        "/auth/no-access",
+        "/no-access",
         "/404",
         "/_not-found",
     ]

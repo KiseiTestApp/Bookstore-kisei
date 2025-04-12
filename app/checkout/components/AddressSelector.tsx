@@ -2,20 +2,23 @@
 
 import { Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import {Province, Ward, District, AddressSelection} from "@/app/types/address";
+import {Province, Ward, District} from "@/app/types/address";
 import Grid from "@mui/material/Grid2";
+import {useFormContext} from 'react-hook-form';
 
 interface AddressSelectorProps {
-    value: AddressSelection;
-    onChangeAction: (address: AddressSelection) => void;
+    name: string;
 }
 
-export default function AddressSelector({ value, onChangeAction } : AddressSelectorProps) {
+export default function AddressSelector({ name } : AddressSelectorProps) {
+    const {watch, setValue, getValues} = useFormContext();
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [districts, setDistricts] = useState<District[]>([]);
     const [wards, setWards] = useState<Ward[]>([]);
-    const [selected, setSelected] = useState<AddressSelection>(value);
     const [isLoading, setIsLoading] = useState(false);
+
+    const formValues = watch(name);
+    const { province, district, ward, street } = formValues || {};
 
     useEffect(() => {
         const loadData = async () => {
@@ -29,49 +32,63 @@ export default function AddressSelector({ value, onChangeAction } : AddressSelec
                 setIsLoading(false);
             }
         }
-        loadData();
+        void loadData();
     }, []);
 
     useEffect(() => {
-        if (selected.province) {
-            const province = provinces.find(p => p.Code === selected.province);
-            setDistricts(province?.District || []);
+        if (province) {
+            const provinceObj = provinces.find(p => p.Code == province);
+            setDistricts(provinceObj?.District || []);
+            setValue(`${name}.district`, '');
+            setValue(`${name}.ward`, '');
         }
-    }, [selected.province]);
+    }, [province, provinces, name, setValue]);
 
     useEffect(() => {
-        if (selected.district) {
-            const district = districts.find(d => d.Code === selected.district);
-            setWards(district?.Ward || []);
+        if (district) {
+            const districtObj = districts.find(d => d.Code === district);
+            setWards(districtObj?.Ward || []);
+            setValue(`${name}.ward`, '');
         }
-    }, [selected.district]);
+    }, [district, districts, name, setValue]);
 
-    const handleChange = (field : keyof AddressSelection, value: string) => {
+    const handleFieldChange = (field: string, value: string) => {
+        const currentValues = getValues(name);
         const newValues = {
-            ...selected,
+            ...currentValues,
             [field]: value
-        };
+        }
+        setValue(`${name}.${field}`, value);
 
-        setSelected(newValues);
-
+        // Tìm thông tin địa chỉ dựa theo Code tương ứng
         const provinceObj = provinces.find(p => p.Code === newValues.province);
-        const districtObj = districts.find(d => d.Code === newValues.district);
-        const wardObj = wards.find(w => w.Code === newValues.ward);
+        const districtObj = provinceObj?.District?.find(d => d.Code === newValues.district);
+        const wardObj = districtObj?.Ward?.find(w => w.Code === newValues.ward);
 
+        // Lưu tên địa chỉ
+        if (field === 'province') {
+            setValue(`${name}.district`, newValues.province);
+            setValue(`${name}.provinceName`, provinceObj?.FullName || '');
+        }
+        if (field === 'district') {
+            setValue(`${name}.district`, newValues.district);
+            setValue(`${name}.districtName`, districtObj?.FullName || '');
+        }
+        if (field === 'ward') {
+            setValue(`${name}.ward`, newValues.ward);
+            setValue(`${name}.wardName`, wardObj?.FullName || '');
+        }
 
-        onChangeAction({
-            ...newValues,
-            province: provinceObj?.FullName || '',
-            district: districtObj?.FullName || '',
-            ward: wardObj?.FullName || '',
-            fullAddress: [
+        // Cập nhật địa chỉ đầy đủ
+        const addressParts = [
                 newValues.street,
                 wardObj?.FullName,
                 districtObj?.FullName,
                 provinceObj?.FullName
-            ].filter(Boolean).join(', ')
-        });
+        ].filter(part => part && part.trim() !== ' ');
+        setValue(`${name}.fullAddress`, addressParts.join(', '));
     };
+
 
     return (
         <Grid container spacing={2}>
@@ -83,16 +100,22 @@ export default function AddressSelector({ value, onChangeAction } : AddressSelec
                         <TextField
                             fullWidth
                             placeholder="Tên nhà, số đường"
-                            value={selected.street}
-                            onChange={(e) => handleChange('street', e.target.value)}
+                            value={street || ''}
+                            onChange={(e) => handleFieldChange('street', e.target.value)}
                         />
                     </Grid>
                     <Grid size={4}>
                         <FormControl fullWidth>
                             <InputLabel>Tỉnh/Thành phố</InputLabel>
                             <Select
-                                value={selected.province}
-                                onChange={(e) => handleChange('province', e.target.value)}
+                                value={province || ''}
+                                onChange={(e) => handleFieldChange('province', e.target.value)}
+                                label="Tỉnh/Thành phố"
+                                MenuProps={{
+                                    style: {
+                                        maxHeight: 300,
+                                    },
+                                }}
                             >
                                 {provinces.map((province) => (
                                     <MenuItem key={province.Code} value={province.Code}>
@@ -103,12 +126,18 @@ export default function AddressSelector({ value, onChangeAction } : AddressSelec
                         </FormControl>
                     </Grid>
                     <Grid size={4}>
-                        <FormControl fullWidth >
+                        <FormControl fullWidth>
                             <InputLabel>Quận/Huyện</InputLabel>
                             <Select
-                                value={selected.district}
-                                onChange={(e) => handleChange('district', e.target.value)}
-                                disabled={!selected.province}
+                                value={district || ''}
+                                onChange={(e) => handleFieldChange('district', e.target.value)}
+                                label="Quận/Huyện"
+                                disabled={!province}
+                                MenuProps={{
+                                    style: {
+                                        maxHeight: 300,
+                                    }
+                                }}
                             >
                                 {districts.map((district) => (
                                     <MenuItem key={district.Code} value={district.Code}>
@@ -122,9 +151,14 @@ export default function AddressSelector({ value, onChangeAction } : AddressSelec
                         <FormControl fullWidth>
                             <InputLabel>Phường/Xã</InputLabel>
                             <Select
-                                value={selected.ward}
-                                onChange={(e) => handleChange('ward', e.target.value)}
-                                disabled={!selected.district}
+                                value={ward || ''}
+                                onChange={(e) => handleFieldChange('ward', e.target.value)}
+                                label="Phường/Xã"
+                                MenuProps={{
+                                    style: {
+                                        maxHeight: 300,
+                                    }
+                                }}
                             >
                                 {wards.map((ward) => (
                                     <MenuItem key={ward.Code} value={ward.Code}>

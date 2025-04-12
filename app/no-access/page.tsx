@@ -1,19 +1,8 @@
-"use client"
 
-import * as React from 'react';
 import {Button, Typography} from "@mui/material";
 import Image from "next/image";
-import {useEffect} from "react";
-
 
 export default function NoAccess() {
-    useEffect(() => {
-        document.body.classList.add("no-scroll");
-        return () => {
-            document.body.classList.remove("no-scroll");
-        }
-    }, []);
-
     return (
         <div className="flex h-screen w-full">
             <div className="md:flex md:bg-black brightness-50 h-full w-full items-center justify-center">

@@ -8,7 +8,6 @@ import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
-import {ClimbingBoxLoader} from "react-spinners";
 import theme from "@/app/theme";
 import Divider from "@mui/material/Divider";
 import {Stack} from "@mui/system";
@@ -46,13 +45,13 @@ export default function BookDetails({book} : {book: Book}) {
     return (
         <Box marginX={12} marginY={6} >
             <Box marginBottom={2}>
-                <Breadcrumb lastLabel={book.title} />
+                <Breadcrumb lastLabel={book.title || 'Không tìm thấy được sách'} />
             </Box>
             <Grid container spacing={2} className=" items-start">
                 <Grid container size={4} className="bg-white rounded-md px-4 py-4 " sx={{ position: 'sticky', top: '0', height: 'fit-content' }}>
                     <Image
                         src={book.imageUrl || "No image found"}
-                        alt={book.title}
+                        alt={book.title || 'No image found'}
                         width={600}
                         height={600}
                         priority={true}
