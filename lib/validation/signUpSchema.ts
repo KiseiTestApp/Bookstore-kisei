@@ -5,7 +5,7 @@ export const signUpSchema = z.object({
     email: z.string().email('Email không đúng định dạng'),
     password: z.string()
         .regex(
-            /(?=(.*[0-9]))(?=.*[\!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?])(?=.*[a-z])(?=(.*[A-Z]))(?=(.*)).{8,}/,
+            /(?=(.*[0-9]))(?=.*[!@#$%^&*()\\[\]{}\-_+=~`|:;"'<>,./?])(?=.*[a-z])(?=(.*[A-Z]))(?=(.*)).{8,}/,
             'Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 ký tự đặc biệt và dài ít nhất 8 ký tự'
         )
         .nonempty('Mật khẩu không được để trống'),

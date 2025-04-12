@@ -5,7 +5,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 const nextConfig: NextConfig = {
+    output: 'standalone',
     images: {
+        unoptimized: true,
         remotePatterns: [
             {
                 protocol: "https",
@@ -20,6 +22,7 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    trailingSlash: true,
 };
 
 module.exports = withBundleAnalyzer(nextConfig);
