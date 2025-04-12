@@ -6,7 +6,6 @@ import {IconButton, Tooltip, Typography} from "@mui/material";
 import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
-import {useRouter} from "next/navigation";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface Book {
@@ -37,8 +36,8 @@ const BookCard = ({ book, onAddtoCart }: BookCardProps) => {
         e.stopPropagation();
         setIsNavigating(true);
         window.open(`/book-details/${book.id}`, "_blank");
+        setTimeout(() => setIsNavigating(false), 500);
     }
-    const router = useRouter();
     const [isHovered, setHovered] = React.useState(false);
     return (
         <Box

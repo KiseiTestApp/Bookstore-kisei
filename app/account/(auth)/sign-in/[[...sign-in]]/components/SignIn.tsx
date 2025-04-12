@@ -89,7 +89,7 @@ export default function SignIn() {
                     <Link underline="hover" color="textPrimary">
                         Quên mật khẩu?
                     </Link>
-                    <Link href="/account/(auth)/sign-up" underline="hover">
+                    <Link href="/account/sign-up" underline="hover">
                         Đăng ký mới
                     </Link>
                 </div>

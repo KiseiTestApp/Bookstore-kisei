@@ -6,7 +6,7 @@ import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
 import Person from "@mui/icons-material/Person";
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import {db} from "@/lib/firebase/config";
 import {doc, onSnapshot} from "firebase/firestore";
 import {usePathname, useRouter} from "next/navigation";
@@ -22,7 +22,7 @@ export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [cartItemCount, setCartItemCount] = useState(0);
     const open = Boolean(anchorEl);
-    const { user, logout } = useAuth();
+    const {user, logout} = useAuth();
     const router = useRouter();
     const pathName = usePathname();
     const theme = useTheme();
@@ -47,7 +47,7 @@ export default function Header() {
             link: "/cart",
             icon: (
                 <Badge badgeContent={cartItemCount} color="primary">
-                    <ShoppingCartOutlined />
+                    <ShoppingCartOutlined/>
                 </Badge>
             ),
         },
@@ -69,7 +69,8 @@ export default function Header() {
         "/_not-found",
     ]
     const shouldHideHeader = (pathname: string) => {
-        return EXCLUDED_PATHS.includes(pathname) || pathname.startsWith("/admin");
+        return EXCLUDED_PATHS.some(path => pathname === path) ||
+            pathname.startsWith("/admin");
     }
 
     if (shouldHideHeader(pathName)) {
@@ -77,7 +78,8 @@ export default function Header() {
     }
 
     return (
-        <nav className="py-4 px-4 sm:px-10 bg-white border-b border-b-neutral-100 flex flex-col md:flex-row items-center gap-4 md:gap-0">
+        <nav
+            className="py-4 px-4 sm:px-10 bg-white border-b border-b-neutral-100 flex flex-col md:flex-row items-center gap-4 md:gap-0">
             <div className="flex w-full md:w-auto justify-between items-center">
                 <Image
                     src="/logoipsum-332.svg"
@@ -105,9 +107,9 @@ export default function Header() {
                                 aria-expanded={open ? 'true' : undefined}
                             >
                                 {user ? (
-                                    <Avatar sx={{ width: 32, height: 32 }}>{user.displayName?.charAt(0)}</Avatar>
+                                    <Avatar sx={{width: 32, height: 32}}>{user.displayName?.charAt(0)}</Avatar>
                                 ) : (
-                                    <Person />
+                                    <Person/>
                                 )}
                             </IconButton>
                         </Tooltip>
@@ -116,7 +118,7 @@ export default function Header() {
             </div>
 
             <Box width={isMobile ? '100%' : 'auto'} flexGrow={1} px={isMobile ? 0 : 6}>
-                <InlineSearch isMobile={isMobile} />
+                <InlineSearch isMobile={isMobile}/>
             </Box>
 
             {!isMobile && (
@@ -135,9 +137,9 @@ export default function Header() {
                                     onClick={handleClick}
                                     className="cursor-pointer">
                                     {user ? (
-                                        <Avatar sx={{ width: 32, height: 32 }}>{user.displayName?.charAt(0)}</Avatar>
+                                        <Avatar sx={{width: 32, height: 32}}>{user.displayName?.charAt(0)}</Avatar>
                                     ) : (
-                                        <Person />
+                                        <Person/>
                                     )}
                                 </IconButton>
                             </Tooltip>

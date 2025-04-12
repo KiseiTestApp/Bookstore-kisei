@@ -37,7 +37,7 @@ export default function BookDetails({book} : {book: Book}) {
                 console.log('Error adding item to cart: ', error);
                 showSnackbar("Đã có lỗi đã xảy ra khi thêm hàng vào giỏ", "error")
             }
-        } else {
+        } else if (!user) {
             showSnackbar('Vui lòng đăng nhập trước khi sử dụng tính năng này', 'warning')
         }
     }
