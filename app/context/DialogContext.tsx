@@ -8,7 +8,9 @@ type DialogOptions = {
     content: React.ReactNode;
     onConfirm?: () => void;
     confirmText?: string;
-    cancelText?: string;
+    cancelText?: string | null;
+    showConfirmButton?: boolean;
+    showCancelButton?: boolean;
 }
 
 type DialogContextType = {
@@ -23,7 +25,11 @@ export const DialogProvider = ({children} : {children: React.ReactNode}) => {
     const [dialogOptions, setDialogOptions] = useState<DialogOptions | null>(null);
 
     const confirmDialog = (options: DialogOptions) => {
-        setDialogOptions(options);
+        setDialogOptions({
+            showConfirmButton: true,
+            showCancelButton: true,
+            ...options,
+        });
         setOpen(true);
     }
 
@@ -36,16 +42,22 @@ export const DialogProvider = ({children} : {children: React.ReactNode}) => {
     return (
         <DialogContext.Provider value={{confirmDialog}}>
             {children}
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={handleClose} maxWidth='lg'>
                 <DialogTitle>{dialogOptions?.title || "Xác nhận"}</DialogTitle>
                 <DialogContent>{dialogOptions?.content}</DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>
-                        {dialogOptions?.cancelText || "Hủy"}
-                    </Button>
-                    <Button onClick={handleConfirm} color="error">
-                        {dialogOptions?.confirmText || "Xác nhận"}
-                    </Button>
+                    {dialogOptions?.showCancelButton !== false && (
+                        <Button onClick={handleClose}>
+                            {dialogOptions?.cancelText || "Hủy"}
+                        </Button>
+                    )}
+                    {dialogOptions?.showConfirmButton !== false && (
+                        <Button onClick={dialogOptions?.onConfirm ? handleConfirm : handleClose}
+                                color={dialogOptions?.onConfirm ? 'error' : 'primary'}
+                        >
+                            {dialogOptions?.confirmText || (dialogOptions?.onConfirm) ? 'Đóng' : 'Xác nhận'}
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
         </DialogContext.Provider>

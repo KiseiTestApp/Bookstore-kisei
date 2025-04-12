@@ -1,4 +1,4 @@
-import Paper from '@mui/material/Paper';
+import Card from "@mui/material/Card";
 import Typography from '@mui/material/Typography';
 import {
     Table,
@@ -20,7 +20,7 @@ export const OrderTable = ({ orders }: OrderTableProps) => {
         return <Typography variant="body1" color="textPrimary" marginTop={2}>Không có đơn hàng</Typography>
     }
     return (
-        <TableContainer component={Paper} sx={{ marginTop: 2}}>
+        <TableContainer component={Card} sx={{ marginTop: 2}}>
             <Table sx={{ minWidth: 650, maxWidth: 800 }}>
                 <TableHead>
                     <TableRow>
@@ -28,6 +28,7 @@ export const OrderTable = ({ orders }: OrderTableProps) => {
                         <TableCell>Số lượng</TableCell>
                         <TableCell>Thanh toán</TableCell>
                         <TableCell>Trạng thái</TableCell>
+                        <TableCell>Thao tác</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

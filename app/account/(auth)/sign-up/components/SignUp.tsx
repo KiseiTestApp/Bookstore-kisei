@@ -27,7 +27,7 @@ export default function SignUp() {
     const router = useRouter();
     const onSubmit = async (data: SignUpFormData) => {
         try {
-            await signUp(data.email, data.password, data.phoneNumber, data.username);
+            await signUp(data.email, data.password, data.username, data.phoneNumber);
             showSnackbar('Đăng ký thành công', 'success', {vertical: 'top', horizontal: 'center'});
             setTimeout(() => router.push('/'), 2500);
         } catch (error) {

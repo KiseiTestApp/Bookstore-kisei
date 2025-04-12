@@ -4,14 +4,17 @@ import {Button, TextField, Typography} from "@mui/material";
 import Image from "next/image";
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
 export default function AdminSignIn() {
-    const {adminSignIn} = useAuth();
+    const {signIn} = useAuth();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const router = useRouter();
     const handleAdminLogin = async () => {
         try {
-            await adminSignIn(email, password);
+            await signIn(email, password, 'admin');
+            router.replace("/admin/dashboard");
         } catch (err: any) {
             console.error("Admin login failed", err.message);
         }

@@ -15,9 +15,8 @@ type AuthContextType = {
     user: User | null;
     role: string | null;
     loading: boolean;
-    signIn: (email: string, password: string) => Promise<void>;
+    signIn: (email: string, password: string, requiredRole?: string) => Promise<void>;
     signUp: (email: string, password: string, username: string, phoneNumber: string) => void;
-    adminSignIn: (email: string, password: string) => void;
     changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{success: boolean, error?: any}>;
     logout: () => Promise<void>;
     error: string | null;
@@ -29,7 +28,6 @@ const AuthContext = createContext<AuthContextType>({
     loading: true,
     signIn: async () => {},
     signUp: async () => {},
-    adminSignIn: async () => {},
     changePassword: async () => ({success: false}),
     logout: async () => {},
     error: null,
@@ -62,14 +60,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, []);
 
-    //Chức năng đăng nhập cho khách hàng
-    const signIn = async (email: string, password: string) : Promise<void> => {
+    //Chức năng đăng nhập
+    const signIn = async (email: string, password: string, requiredRole?: string) : Promise<void> => {
         setLoading(true);
         setError(null);
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            const idToken = await user.getIdToken();
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+            const userRole = userDocSnapshot.data()?.role || "user";
+            if (requiredRole && userRole !== requiredRole) {
+                await auth.signOut();
+                showSnackbar('Từ chối truy cập. Vai trò không hợp lệ', 'error');
+                return;
+            }
+            if (!userDocSnapshot.exists()) {
+                await auth.signOut();
+                showSnackbar('Tài khoản không hợp lệ', 'error');
+                router.push('/');
+            }
+            const idToken = await user.getIdToken(true);
             document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
         } catch (err: any) {
             const errorMessage = getAuthErrorMessage(err.code) || "Đăng nhập thất bại";
@@ -105,45 +116,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (err: any) {
             setError(err.message);
             throw err;
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    //Chức năng đăng nhập cho quản trị viên
-    const adminSignIn = async (email: string, password: string) : Promise<void> => {
-        setLoading(true);
-        setError(null);
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnapshot = await getDoc(userDocRef);
-            const userRole = userDocSnapshot.data()?.role;
-            if (userRole !== "admin") {
-                await auth.signOut();
-                showSnackbar("Từ chối truy cập. Người dùng không phải Admin", "error");
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                router.push("/no-access");
-                return;
-            }
-            const idToken = await user.getIdToken(true);
-            document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
-            showSnackbar("Đăng nhập thành công", "success")
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            router.replace("/admin/dashboard");
-        } catch (err: any) {
-            setLoading(false);
-            if (err.code && err.code.startsWith('auth/')) {
-                const errorMessage = getAuthErrorMessage(err.code);
-                setError(errorMessage);
-                showSnackbar(errorMessage, "error");
-            }
-            else {
-                const errorMessage = err.message || 'Đã xảy ra lỗi không xác định';
-                setError(errorMessage);
-                showSnackbar(errorMessage, "error");
-            }
         } finally {
             setLoading(false);
         }
@@ -216,7 +188,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, role, loading, signIn, signUp, adminSignIn, error, changePassword, logout }}>
+        <AuthContext.Provider value={{ user, role, loading, signIn, signUp, error, changePassword, logout }}>
             {children}
         </AuthContext.Provider>
     );

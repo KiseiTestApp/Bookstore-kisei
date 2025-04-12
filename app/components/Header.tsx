@@ -16,6 +16,7 @@ import AccountMenu from "@/app/components/AccountMenu";
 import Box from "@mui/material/Box";
 import Image from "next/image";
 import {useMediaQuery, useTheme} from "@mui/material";
+import {shouldHideComponent} from "@/app/utils/hideComponents";
 
 
 export default function Header() {
@@ -61,19 +62,7 @@ export default function Header() {
         setAnchorEl(null);
     };
 
-    const EXCLUDED_PATHS = [
-        "/account/sign-in",
-        "/account/sign-up",
-        "/no-access",
-        "/404",
-        "/_not-found",
-    ]
-    const shouldHideHeader = (pathname: string) => {
-        return EXCLUDED_PATHS.some(path => pathname === path) ||
-            pathname.startsWith("/admin");
-    }
-
-    if (shouldHideHeader(pathName)) {
+    if (shouldHideComponent(pathName)) {
         return null;
     }
 
