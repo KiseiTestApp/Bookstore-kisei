@@ -7,14 +7,15 @@ import React, {useEffect} from "react";
 import Box from '@mui/material/Box';
 import CircularProgress from "@mui/material/CircularProgress";
 import {DialogProvider} from "@/app/context/DialogContext";
+import ProtectedRoute from "@/app/components/ProtectedRoute";
 
 
 export default function Layout({ children } : {children: React.ReactNode}) {
     const pathname = usePathname();
     const router = useRouter();
     const {user, role, loading} = useAuth();
-    const isSignInPage = pathname === "/admin/sign-in";
-    const isNoAccessPage = pathname === "/auth/no-access-page";
+    const isSignInPage = pathname === "/admin/sign-in/";
+    const isNoAccessPage = pathname === "/no-access/";
     useEffect(() => {
         if (!loading) {
             if (!user && !isSignInPage && !isNoAccessPage) {
@@ -23,7 +24,7 @@ export default function Layout({ children } : {children: React.ReactNode}) {
                 router.push("/auth/no-access")
             }
         }
-    }, [user, role, loading, router, isNoAccessPage, isNoAccessPage]);
+    }, [user, role, loading, router, isSignInPage, isNoAccessPage]);
 
     if (loading) {
         return (
@@ -35,12 +36,14 @@ export default function Layout({ children } : {children: React.ReactNode}) {
 
     return (
             <main className="flex bg-gray-100">
-                <DialogProvider>
-                    <aside className="sm:hidden lg:flex lg:visible">
-                        {!isSignInPage && <Sidebar />}
-                    </aside>
-                    <section className="flex-1 bg-gray-100">{children}</section>
-                </DialogProvider>
+                <ProtectedRoute>
+                    <DialogProvider>
+                        <aside className="sm:hidden lg:flex lg:visible">
+                            {!isSignInPage && <Sidebar />}
+                        </aside>
+                        <section className="flex-1 bg-gray-100">{children}</section>
+                    </DialogProvider>
+                </ProtectedRoute>
             </main>
     );
 }
