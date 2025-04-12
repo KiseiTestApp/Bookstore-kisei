@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 showSnackbar('Tài khoản không hợp lệ', 'error');
                 router.push('/');
             }
-            const idToken = await user.getIdToken();
+            const idToken = await user.getIdToken(true);
             document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
         } catch (err: any) {
             const errorMessage = getAuthErrorMessage(err.code) || "Đăng nhập thất bại";

@@ -1,8 +1,8 @@
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {useRouter} from "next/navigation";
-import {ReactNode, useEffect} from "react";
+import React, {useEffect} from "react";
 
-export default function ProtectedRoute({children}: {children: ReactNode}) {
+export default function ProtectedRoute({children}: {children: React.ReactNode}) {
     const {role, loading} = useAuth();
     const router = useRouter();
     useEffect(() => {

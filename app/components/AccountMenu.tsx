@@ -44,12 +44,12 @@ export default function AccountMenu({ user, anchorEl, open, onCloseAction, onSig
         >
             {user ? [
                 <Box key="sign-in-list">
-                    <MenuItem key="greeting">
+                    <MenuItem>
                         <ListItemText>
                             <Typography variant="body1" className="items-center justify-center">Xin chào, {user.displayName}</Typography>
                         </ListItemText>
                     </MenuItem>
-                    <MenuItem key="profile" onClick={() => router.push('/customer/account')}>
+                    <MenuItem onClick={() => router.push('/customer/account/')}>
                         <ListItemIcon>
                             <ManageAccounts fontSize="small" />
                         </ListItemIcon>
@@ -57,7 +57,7 @@ export default function AccountMenu({ user, anchorEl, open, onCloseAction, onSig
                             Tài khoản của tôi
                         </ListItemText>
                     </MenuItem>
-                    <MenuItem key="orders">
+                    <MenuItem onClick={() => router.push('/customer/order-history/')}>
                         <ListItemIcon>
                             <ListAltIcon fontSize="small" />
                         </ListItemIcon>
@@ -65,7 +65,7 @@ export default function AccountMenu({ user, anchorEl, open, onCloseAction, onSig
                             Đơn hàng của tôi
                         </ListItemText>
                     </MenuItem>
-                    <MenuItem key="log-out">
+                    <MenuItem>
                         <ListItemIcon>
                             <LogoutIcon fontSize="small" />
                         </ListItemIcon>
