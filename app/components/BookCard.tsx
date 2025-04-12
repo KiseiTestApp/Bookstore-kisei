@@ -6,7 +6,6 @@ import {IconButton, Tooltip, Typography} from "@mui/material";
 import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
-import {useRouter} from "next/navigation";
 import CircularProgress from "@mui/material/CircularProgress";
 
 interface Book {
