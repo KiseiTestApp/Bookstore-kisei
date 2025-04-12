@@ -16,8 +16,10 @@ export default function Footer() {
         "/404",
         "/_not-found",
     ]
+
     const shouldHideFooter = (pathname: string) => {
-        return EXCLUDED_PATHS.includes(pathname) || pathname.startsWith("/admin");
+        return EXCLUDED_PATHS.some(path => pathname === path) ||
+            pathname.startsWith("/admin");
     }
 
     if (shouldHideFooter(pathName)) {

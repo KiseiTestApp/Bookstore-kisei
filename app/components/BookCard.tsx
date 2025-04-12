@@ -37,8 +37,8 @@ const BookCard = ({ book, onAddtoCart }: BookCardProps) => {
         e.stopPropagation();
         setIsNavigating(true);
         window.open(`/book-details/${book.id}`, "_blank");
+        setTimeout(() => setIsNavigating(false), 500);
     }
-    const router = useRouter();
     const [isHovered, setHovered] = React.useState(false);
     return (
         <Box
