@@ -6,25 +6,14 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import theme from "@/app/theme";
 import Image from "next/image";
+import {shouldHideComponent} from "@/app/utils/hideComponents";
 
 export default function Footer() {
     const pathName = usePathname();
-    const EXCLUDED_PATHS = [
-        "/account/sign-in",
-        "/account/sign-up",
-        "/no-access",
-        "/404",
-        "/_not-found",
-    ]
-
-    const shouldHideFooter = (pathname: string) => {
-        return EXCLUDED_PATHS.some(path => pathname === path) ||
-            pathname.startsWith("/admin");
-    }
-
-    if (shouldHideFooter(pathName)) {
+    if (shouldHideComponent(pathName)) {
         return null;
     }
+
     return (
         <Box bgcolor={theme.palette.primary.main} padding={{ xs: 3, md: 4, lg: 6}}>
             <Box display="flex"
