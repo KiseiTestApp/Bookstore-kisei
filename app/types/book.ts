@@ -1,12 +1,12 @@
 // Sách
 export interface Book {
     id: string;
-    title: string;
-    author: string;
-    genre: string;
-    description: string;
-    publisher: string;
-    publishYear: number;
+    title?: string;
+    author?: string;
+    genre?: string;
+    description?: string;
+    publisher?: string;
+    publishYear?: number;
     price: number;
     discounted: number;
     imageFile?: File | null;

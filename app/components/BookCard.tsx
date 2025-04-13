@@ -38,7 +38,7 @@ const BookCard = ({ book, onAddtoCart }: BookCardProps) => {
                 <Box className="relative transition-all duration-300 items-center justify-center">
                     <Image
                         src={book.imageUrl || 'Unknown'}
-                        alt={book.title}
+                        alt={book.title || 'Book title'}
                         width={300}
                         height={300}
                         className={`transition-all duration-300 items-center justify-center ${isHovered ? "brightness-70" : "brightness-100"}`}
