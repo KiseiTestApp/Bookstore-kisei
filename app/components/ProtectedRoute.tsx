@@ -7,7 +7,7 @@ export default function ProtectedRoute({children}: {children: React.ReactNode}) 
     const router = useRouter();
     useEffect(() => {
         if (!loading && role !== "admin") {
-            router.replace("/no-access");
+            router.replace("/admin/sign-in");
         }
     }, [loading, role, router]);
 

@@ -88,9 +88,10 @@ const useBookUpdate = () => {
         showSnackbar('Đang cập nhật được : 0%', 'info');
         try {
             let imageUrl = data.imageUrl || book?.imageUrl;
-            if (data.imageFile) {
+            const { imageFile: fileToUpload, ...restData } = data;
+            if (fileToUpload) {
                 const storageRef = ref(storage, `books/${bookId}`);
-                const uploadTask = uploadBytesResumable(storageRef, data.imageFile);
+                const uploadTask = uploadBytesResumable(storageRef, fileToUpload);
                 uploadTask.on('state_changed',
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -106,7 +107,7 @@ const useBookUpdate = () => {
             }
             const updatedData = {
                 ...book,
-                ...data,
+                ...restData,
                 imageUrl,
             };
             const bookRef = doc(db, "books", bookId);

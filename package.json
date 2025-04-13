@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "set ANALYZE=true && next build",
-    "analyze:open": "cross-env ANALYZE=true next build && open .next/analyze/client.html",
-    "postbuild": "netlify build"
+    "analyze:open": "cross-env ANALYZE=true next build && open .next/analyze/client.html"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.0",
@@ -23,7 +22,6 @@
     "@mui/material": "^6.4.7",
     "@mui/material-nextjs": "^6.4.3",
     "@mui/x-data-grid": "^7.27.3",
-    "@netlify/next": "^1.4.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
