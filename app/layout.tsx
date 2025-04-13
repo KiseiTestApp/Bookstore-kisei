@@ -11,7 +11,6 @@ import Footer from "@/app/components/Footer";
 import React from "react";
 import {DialogProvider} from "@/app/context/DialogContext";
 
-
 const inter = Inter({
       weight: ['300', '400', '500', '700'],
       subsets: ['latin'],
