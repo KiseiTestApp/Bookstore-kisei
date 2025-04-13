@@ -176,7 +176,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setRole(null);
             document.cookie = 'idToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; Samesite=Strict';
             localStorage.removeItem('idToken');
-            router.push('/account/sign-in');
             showSnackbar("Đăng xuất thành công", "success");
         } catch (err: any) {
             const errorMessage = getAuthErrorMessage(err.code) || 'Logout failed';
