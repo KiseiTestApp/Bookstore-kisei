@@ -6,9 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "analyze": "set ANALYZE=true && next build",
-    "analyze:open": "cross-env ANALYZE=true next build && open .next/analyze/client.html"
+    "lint": "next lint"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.0",
@@ -55,7 +53,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@next/bundle-analyzer": "^15.3.0",
     "@tailwindcss/postcss": "^4.0.11",
     "@types/node": "^20.17.30",
     "@types/react": "^19.1.0",
