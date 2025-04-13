@@ -1,6 +1,5 @@
 "use client"
 
-import React from 'react';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 
@@ -17,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 
 import {useDialog} from "@/app/context/DialogContext";
 import {useSnackbar} from "@/app/context/SnackbarContext";
-import {Book} from '@/app/types/book';
+import {BookTableRow} from '@/app/types/book';
 
 const BooksTableView = () => {
     const {books} = useFetchBooks();
@@ -45,7 +44,7 @@ const BooksTableView = () => {
         })
     }
 
-    const columns: GridColDef<Book>[] = [
+    const columns: GridColDef<BookTableRow>[] = [
         {
             field: 'id',
             headerName: 'STT',

@@ -1,32 +1,46 @@
 "use client"
 
-import React, {useCallback, useEffect, useState} from "react";
+// Các phụ thuộc UI
+import {useCallback, useEffect, useState} from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import Image from "next/image";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
+
+// Ảnh
+import hero1 from '@/public/hero_images_opti/hero1.webp';
+import hero2 from '@/public/hero_images_opti/hero2.webp';
+import hero3 from '@/public/hero_images_opti/hero3.webp';
+import hero4 from '@/public/hero_images_opti/hero4.webp';
+import hero5 from '@/public/hero_images_opti/hero5.webp';
+
+//Lazy loading SlideImage component
+import dynamic from "next/dynamic";
+const LazySlide = dynamic(() => import('@/app/components/SlideImage'), {
+    ssr: false,
+    loading: () => <div className='w-full h-full bg-gray-300 animate-pulse' />
+})
 
 export default function HeroImages() {
     const images = [
         {
-            image: "https://picsum.photos/1920/1080?random=1",
+            image: hero1,
             alt: "Slide 1"
         },
         {
-            image: "https://picsum.photos/1920/1080?random=2",
+            image: hero2,
             alt: "Slide 2"
         },
         {
-            image: "https://picsum.photos/1920/1080?random=3",
+            image: hero3,
             alt: "Slide 3"
         },
         {
-            image: "https://picsum.photos/1920/1080?random=4",
+            image: hero4,
             alt: "Slide 4"
         },
         {
-            image: "https://picsum.photos/1920/1080?random=5",
+            image: hero5,
             alt: "Slide 5"
         },
     ]
@@ -74,16 +88,9 @@ export default function HeroImages() {
                 {images.map((image, index) => (
                     <div key={index} className="relative flex-none w-full min-h-[300px]">
                         {loadedImages[index] ? (
-                            <Image
-                                src={image.image}
-                                alt={`Slide ${index + 1}`}
-                                className="w-full h-full object-cover"
-                                fill
-                                priority={index === 0}
-                                loading={index === 0 ? 'eager' : 'lazy'}
-                            />
-                        ): (
-                            <div className="w-full h-full bg-gray-300 animate-pulse" />
+                            <LazySlide src={image.image} alt={image.alt} />
+                        ) : (
+                            <div className='w-full h-full bg-gray-300 animate-pulse'></div>
                         )}
                     </div>
                 ))}

@@ -1,4 +1,3 @@
-import RevenueBarChart from "@/app/admin/dashboard/components/BarChart";
 import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -7,6 +6,9 @@ import UsersCountCard from "@/app/admin/dashboard/components/UsersCountCard";
 import OrdersCountCard from "@/app/admin/dashboard/components/OrdersCountCard";
 import PopularBooksCard from "@/app/admin/dashboard/components/PopularBooksCard";
 import {Metadata} from "next";
+import dynamic from "next/dynamic";
+
+const RevenueBarChart = dynamic(() => import("@/app/admin/dashboard/components/BarChart"));
 
 export const metadata: Metadata = {
     title: "Tổng quan",
