@@ -1,6 +1,6 @@
 "use client"
 
-import Sidebar from "@/app/admin/components/sidebar";
+import Sidebar from "@/app/admin/components/Sidebar";
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {usePathname} from "next/navigation";
 import React from "react";
