@@ -6,7 +6,6 @@ import {usePathname} from "next/navigation";
 import React from "react";
 import Box from '@mui/material/Box';
 import CircularProgress from "@mui/material/CircularProgress";
-import {DialogProvider} from "@/app/context/DialogContext";
 import ProtectedRoute from "@/app/components/ProtectedRoute";
 
 
@@ -27,12 +26,10 @@ export default function Layout({ children } : {children: React.ReactNode}) {
     return (
             <main className="flex bg-gray-100">
                 <ProtectedRoute>
-                    <DialogProvider>
                         <aside className="sm:hidden lg:flex lg:visible">
                             {!isSignInPage && <Sidebar />}
                         </aside>
                         <section className="flex-1 bg-gray-100">{children}</section>
-                    </DialogProvider>
                 </ProtectedRoute>
             </main>
     );
