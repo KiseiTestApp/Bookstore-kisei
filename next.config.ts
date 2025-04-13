@@ -7,15 +7,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig: NextConfig = {
     output: 'standalone',
     images: {
-        unoptimized: true,
         remotePatterns: [
             {
                 protocol: "https",
                 hostname: "firebasestorage.googleapis.com",
-            },
-            {
-                protocol: "https",
-                hostname: "picsum.photos"
             },
         ],
     },

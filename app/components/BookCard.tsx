@@ -7,15 +7,8 @@ import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import {Book} from '@/app/types/book';
 
-interface Book {
-    id: string;
-    title: string;
-    author: string;
-    price: number;
-    discounted: number;
-    imageUrl: string;
-}
 interface BookCardProps {
     book: Book;
     onAddtoCart: (bookId: string, quantity: number) => void;
@@ -44,7 +37,7 @@ const BookCard = ({ book, onAddtoCart }: BookCardProps) => {
             <Box className="px-4 pb-6 border border-neutral-100 rounded-xs hover:shadow-md cursor-pointer" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
                 <Box className="relative transition-all duration-300 items-center justify-center">
                     <Image
-                        src={book.imageUrl}
+                        src={book.imageUrl || 'Unknown'}
                         alt={book.title}
                         width={300}
                         height={300}
