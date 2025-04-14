@@ -11,7 +11,6 @@ import {OrderDocument} from "@/app/types/order";
 import { OrderStatusTabs } from './OrderStatusTabs';
 import { OrderTable } from './OrderTable';
 import {useAuth} from "@/app/context/AuthProviderContext";
-import {redirect} from "next/navigation";
 
 export const OrderHistoryContainer = () => {
     const {user} = useAuth();
@@ -38,11 +37,6 @@ export const OrderHistoryContainer = () => {
             loadOrders();
         }
     }, [user]);
-
-    // Nếu không hướng trang người dùng về trang đăng nhập
-    if (!user) {
-        redirect('/account/sign-in');
-    }
 
     // Lọc các đơn của người dùng ứng với các trạng thái tương ứng
     const filteredOrders = (status?: OrderDocument['status']) =>
