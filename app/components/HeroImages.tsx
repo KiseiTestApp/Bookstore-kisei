@@ -88,7 +88,7 @@ export default function HeroImages() {
                 {images.map((image, index) => (
                     <div key={index} className="relative flex-none w-full min-h-[300px]">
                         {loadedImages[index] ? (
-                            <LazySlide src={image.image} alt={image.alt} />
+                            <LazySlide src={image.image} alt={image.alt} loading={index === 0 ? 'eager' : 'lazy'} />
                         ) : (
                             <div className='w-full h-full bg-gray-300 animate-pulse'></div>
                         )}
