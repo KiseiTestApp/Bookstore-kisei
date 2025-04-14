@@ -44,6 +44,7 @@ export default function SignUp() {
                     alt="Book Wallapaper"
                     className="w-full h-full object-cover"
                     fill={true}
+                    loading='eager'
                 />
             </Box>
             <Box className="w-full md:w-1/2 flex flex-col items-center justify-center p-28">

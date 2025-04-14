@@ -43,6 +43,7 @@ export default function SignIn() {
                     alt="Bookstore"
                     className="w-full h-full object-cover"
                     fill={true}
+                    loading='eager'
                 />
             </div>
 

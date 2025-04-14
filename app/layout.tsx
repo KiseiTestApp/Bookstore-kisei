@@ -39,6 +39,9 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
   return (
 
           <html lang="en">
+            <head>
+                <link rel='preconnect' href='https://firebasestorage.googleapis.com' />
+            </head>
             <body className={`${inter.className} antialiased bg-gray-100`}>
             <DialogProvider>
                 <SnackbarProvider>
