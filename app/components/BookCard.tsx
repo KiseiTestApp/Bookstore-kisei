@@ -90,9 +90,9 @@ const BookCard = ({ book, onAddtoCart }: BookCardProps) => {
                         </Tooltip>
                     </Box>
                     <Box className="mt-3">
-                        <Typography variant="h6" fontSize="1.2rem" color='primary'>
+                        <Typography variant="h6" fontSize="1.2rem" color='textPrimary' fontWeight={500}>
                             {book.discounted.toLocaleString('vi-VN')} VND
-                            <span className="mx-3 p-1 rounded-sm bg-emerald-500 text-gray-50 text-sm">
+                            <span className="mx-3 p-1 rounded-sm bg-emerald-700 text-gray-50 text-sm">
                             {Math.round((book.price/book.discounted) * 100) - 100}%
                         </span>
                         </Typography>
