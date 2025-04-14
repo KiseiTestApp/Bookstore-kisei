@@ -73,25 +73,24 @@ const BookCard = ({ book, onAddtoCart }: BookCardProps) => {
                 </Box>
                 <Box className="py-6">
                     <Box>
-                        <Typography variant="body1" color="textSecondary">
+                        <Typography variant="body2" color="textSecondary">
                             {book.author}
                         </Typography>
                         <Tooltip title={book.title} placement="top">
                             <Typography
-                                variant="h6"
+                                variant="body1"
                                 className="sm:line-clamp-none md:line-clamp-1"
-                                sx={{
-                                    fontWeight: "medium",
-                                    fontSize: "large",
-                                }}
                                 color='textPrimary'
+                                sx={{
+                                    fontWeight: 'regular',
+                                }}
                             >
                                 {book.title}
                             </Typography>
                         </Tooltip>
                     </Box>
                     <Box className="mt-3">
-                        <Typography variant="body1" fontSize="1.2rem" >
+                        <Typography variant="h6" fontSize="1.2rem" color='primary'>
                             {book.discounted.toLocaleString('vi-VN')} VND
                             <span className="mx-3 p-1 rounded-sm bg-emerald-500 text-gray-50 text-sm">
                             {Math.round((book.price/book.discounted) * 100) - 100}%
