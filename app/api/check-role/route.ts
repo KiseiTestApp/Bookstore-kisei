@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { initAdmin } from "@/lib/firebase/firebase-admin";
 import {cookies} from "next/headers";
 
-export async function GET() {
+export async function GET(req: Request) {
     try {
+        const isMiddleware = req.headers.get('x-middleware-request') === 'true';
         const adminApp = await initAdmin();
         const cookieStore = await cookies();
-        const token = cookieStore.get('idToken')?.value;
+        const token = cookieStore.get('adminToken')?.value || cookieStore.get('idToken')?.value;
         if (!token) {
             return NextResponse.json(
                 {error: "No token found."},
@@ -32,6 +33,9 @@ export async function GET() {
                 {error: "Insufficient role found."},
                 {status: 403}
             )
+        }
+        if (isMiddleware) {
+            return NextResponse.json({ role: userData.role });
         }
         return NextResponse.json({
             role: userData.role,

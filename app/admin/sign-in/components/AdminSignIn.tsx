@@ -5,6 +5,7 @@ import Image from "next/image";
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {useEffect} from "react";
 import {useForm} from "react-hook-form";
+import {useSnackbar} from "@/app/context/SnackbarContext";
 
 type FormValues = {
     email: string;
@@ -13,6 +14,7 @@ type FormValues = {
 
 export default function AdminSignIn() {
     const {adminSignIn} = useAuth();
+    const {showSnackbar} = useSnackbar();
     const {
         register,
         handleSubmit,
@@ -21,11 +23,16 @@ export default function AdminSignIn() {
     const onSubmit = async (data: FormValues) => {
         try {
             await adminSignIn(data.email, data.password);
+            showSnackbar('Đăng nhập thành công', 'success');
             setTimeout(() => {
                 window.location.href = '/admin/dashboard';
             }, 500);
-        } catch (err: any) {
-            console.error("Admin login failed", err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.log('Admin sign-in failed with error message: ', err.message);
+            } else {
+                console.error('An unknown error has occurred.', err);
+            }
         }
     }
 

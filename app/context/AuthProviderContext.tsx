@@ -10,6 +10,7 @@ import {updatePassword, reauthenticateWithCredential, EmailAuthProvider, getAuth
 import {useSnackbar} from "@/app/context/SnackbarContext";
 import {getAuthErrorMessage} from "@/app/types/authErrors";
 import {useRouter} from "next/navigation";
+import {isFirebaseError} from "@/app/utils/firebaseErrorUtils";
 
 type AuthContextType = {
     user: User | null;
@@ -18,7 +19,7 @@ type AuthContextType = {
     signIn: (email: string, password: string) => Promise<void>;
     signUp: (email: string, password: string, username: string, phoneNumber: string) => void;
     adminSignIn: (email: string, password: string) => Promise<void>;
-    changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{success: boolean, error?: any}>;
+    changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{success: boolean, error?: string}>;
     logout: () => Promise<void>;
     error: string | null;
 };
@@ -35,6 +36,25 @@ const AuthContext = createContext<AuthContextType>({
     error: null,
 });
 
+const setAuthToken = async (token: string) => {
+    try {
+        const response = await fetch('/api/set-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to set auth token');
+        }
+    } catch (error) {
+        console.error('Error setting auth token:', error);
+        throw error;
+    }
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [role, setRole] = useState<string | null>(null);
@@ -45,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     //Kiểm tra tình trạng của user trên hệ thống
     useEffect(() => {
-        const unsubcribe = onAuthStateChanged(auth, async (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setUser(user);
             if (user) {
                 const userDocRef = doc(db, "users", user.uid);
@@ -57,8 +77,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setLoading(false);
         });
         return () => {
-            console.log("AuthProvider unsubcribe", unsubcribe);
-            unsubcribe();
+            console.log("AuthProvider unsubscribe", unsubscribe);
+            unsubscribe();
         }
     }, []);
 
@@ -81,11 +101,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 });
             }
             const idToken = await user.getIdToken(true);
-            console.log("ID Token retrieved:", idToken ? "Yes" : "No");
-            document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
-        } catch (err: any) {
-            const errorMessage = getAuthErrorMessage(err.code) || "Đăng nhập thất bại";
-            showSnackbar(errorMessage, "error");
+            await setAuthToken(idToken);
+        } catch (err: unknown) {
+            let errorMessage = 'Đăng nhập thất bại';
+            if (isFirebaseError(err)) {
+                errorMessage = getAuthErrorMessage(err.code || errorMessage)
+            }
+            showSnackbar(errorMessage, 'error');
             throw new Error(errorMessage);
         } finally {
             setLoading(false);
@@ -113,9 +135,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 createdAt: new Date().toISOString(),
             });
             const idToken = await user.getIdToken();
-
-            document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
-
+            await setAuthToken(idToken);
         } catch (err: any) {
             setError(err.message);
             throw err;
@@ -141,8 +161,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 throw new Error('ADMIN_ACCESS_REQUIRED');
             }
             const idToken = await user.getIdToken(true);
-            document.cookie = `idToken=${idToken}; path=/admin; max-age=${60 * 60}; secure; samesite=strict`;
-            console.log("ID Token retrieved:", idToken ? "Yes" : "No");
+            const response = await fetch('/api/admin/set-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: idToken }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to set admin token');
+            }
+            document.cookie = `isAdmin=true; path=/admin; max-age=${60 * 60 * 24 * 7}; secure; samesite=strict`;
         } catch (err: any) {
             console.error("Admin sign-in failed:", err);
             const errorMessage = err.message === 'ADMIN_ACCESS_REQUIRED'

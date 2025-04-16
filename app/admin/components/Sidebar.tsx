@@ -13,11 +13,11 @@ import Image from "next/image";
 export default function Sidebar(){
     const router = useRouter();
     const {logout} = useAuth();
-    const handleSignout = async () => {
+    const handleSignOut = async () => {
         try {
             await logout();
             console.log("User signed out");
-            router.push("/admin/sign-in");
+            setTimeout(() => router.push("/admin/sign-in"), 500);
         } catch (error) {
             console.error("Error signing out: ", error);
         }
@@ -39,7 +39,7 @@ export default function Sidebar(){
                     variant="outlined"
                     size="large"
                     color="secondary"
-                    onClick={handleSignout}
+                    onClick={handleSignOut}
                     startIcon={<ExittoIcon />}
                     fullWidth
                 >Đăng xuất</Button>
