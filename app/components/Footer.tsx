@@ -14,7 +14,7 @@ export default function Footer() {
         return null;
     }
     return (
-        <Box bgcolor='white' padding={{ xs: 3, md: 4, lg: 6}} minHeight={250} marginTop={2}>
+        <Box bgcolor='white' padding={{ xs: 3, md: 4, lg: 6}} minHeight={250} marginTop={3}>
             <Box display="flex"
                  justifyContent="space-evenly"
                  flexDirection={{ xs: 'column', md: 'row'}}
