@@ -42,8 +42,9 @@ export default function AdminSignIn() {
                 <Image
                     src="/books_wallpaper.jpg"
                     alt="Bookstore"
-                    className="w-full h-full object-cover"
+                    className="object-cover"
                     fill
+                    loading='eager'
                 />
             </div>
             <Box component='form' onSubmit={handleSubmit(onSubmit)} className="w-full md:w-1/2 flex flex-col justify-center p-28">
