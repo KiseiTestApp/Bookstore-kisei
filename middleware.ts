@@ -2,7 +2,7 @@ import {NextRequest, NextResponse} from "next/server";
 
 export async function middleware(req: NextRequest) {
     const {pathname, origin} = req.nextUrl;
-    const publicPaths = ['/admin/sign-in', '/admin/api/set-token'];
+    const publicPaths = ['/admin/sign-in', '/admin/api/admin/set-token', '/admin/api/set-token'];
     if (publicPaths.some(path => pathname.startsWith(path))) {
         return NextResponse.next();
     }
@@ -17,7 +17,7 @@ export async function middleware(req: NextRequest) {
         if (!response.ok) {
             throw new Error(responseData.error || 'Authorization failed.');
         }
-        const { role, error } = await response.json();
+        const { role, error } = responseData;
         if (role !== 'admin') {
             const url = req.nextUrl.clone();
             url.pathname = error === 'Unauthorized' ? '/admin/sign-in' : 'no-access';

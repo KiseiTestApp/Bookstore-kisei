@@ -7,7 +7,7 @@ export async function POST(request: Request) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        path: '/admin',
+        path: '/',
         maxAge: 60 * 60 * 24 * 7,
     });
     const response = NextResponse.json({ success: true });

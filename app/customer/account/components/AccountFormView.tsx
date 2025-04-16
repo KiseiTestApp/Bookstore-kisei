@@ -111,7 +111,7 @@ export const AccountFormView = ({
                         />
                     </Box>
                     <Box display="flex" alignItems="center">
-                        <Typography variant="body1" width={240} paddingTop={1}>Email</Typography>
+                        <Typography variant="body1" width={240} paddingTop={1}>Giới tính</Typography>
                         <FormControl fullWidth>
                             <InputLabel>Giới tính</InputLabel>
                             <Select

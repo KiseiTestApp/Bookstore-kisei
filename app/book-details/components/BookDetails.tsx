@@ -47,11 +47,11 @@ export default function BookDetails({book}: { book: Book }) {
                 <Breadcrumb lastLabel={book.title || 'Không tìm thấy được sách'}/>
             </Box>
             <Grid container spacing={2} className=" items-start" marginBottom={2}>
-                <Grid container size={4} className="bg-white rounded-md px-4 py-4 "
+                <Grid container size={{md: 12, lg: 4}} className="bg-white rounded-md px-4 py-4 "
                       sx={{position: 'sticky', top: '0', height: 'fit-content'}}>
                     <BookImage imageUrl={book.imageUrl || ''} title={book.title || ''}/>
                 </Grid>
-                <Grid size={5}>
+                <Grid size={{ md: 12, lg: 5}}>
                     <Stack spacing={2}>
                         <BookPriceDisplay title={book.title || ''} normalPrice={normalPrice}
                                           discountedPrice={discountedPrice}/>
@@ -63,7 +63,7 @@ export default function BookDetails({book}: { book: Book }) {
                         </Box>
                     </Stack>
                 </Grid>
-                <Grid size={3} className="bg-white rounded-md px-2 py-4"
+                <Grid size={{md: 12, lg: 3}} className="bg-white rounded-md px-2 py-4"
                       sx={{position: 'sticky', top: '0', height: 'fit-content'}}>
                     <PurchaseBox book={book} quantity={quantity} onQuantityChangeAction={setQuantity}
                                  onAddtoCartAction={handleAddtoCart}
