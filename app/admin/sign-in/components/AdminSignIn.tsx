@@ -1,20 +1,29 @@
 "use client"
 
-import {Button, TextField, Typography} from "@mui/material";
+import {Box, Button, TextField, Typography} from "@mui/material";
 import Image from "next/image";
 import {useAuth} from "@/app/context/AuthProviderContext";
-import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import {useEffect} from "react";
+import {useForm} from "react-hook-form";
+
+type FormValues = {
+    email: string;
+    password: string;
+}
 
 export default function AdminSignIn() {
-    const {signIn} = useAuth();
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const router = useRouter();
-    const handleAdminLogin = async () => {
+    const {adminSignIn} = useAuth();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormValues>();
+    const onSubmit = async (data: FormValues) => {
         try {
-            await signIn(email, password, 'admin');
-            router.replace("/admin/dashboard");
+            await adminSignIn(data.email, data.password);
+            setTimeout(() => {
+                window.location.href = '/admin/dashboard';
+            }, 500);
         } catch (err: any) {
             console.error("Admin login failed", err.message);
         }
@@ -37,32 +46,42 @@ export default function AdminSignIn() {
                     fill
                 />
             </div>
-            <div className="w-full md:w-1/2 flex flex-col justify-center p-28">
+            <Box component='form' onSubmit={handleSubmit(onSubmit)} className="w-full md:w-1/2 flex flex-col justify-center p-28">
                 <Typography variant="h5" gutterBottom  >
                     Đăng nhập
                 </Typography>
-                <form onSubmit={handleAdminLogin}>
+                <Box>
                     <TextField
+                        {...register('email', {
+                            required: 'Trường này không thể để trống'
+                        })}
                         label="Đăng nhập bằng email"
                         type="email"
-                        value={email}
-                        onChange={(e)=> setEmail(e.target.value)}
                         fullWidth
                         margin="normal"
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                     />
                     <TextField
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
+                        {...register("password", {
+                            required: "Trường này không thể để trống",
+                            minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters"
+                            }
+                        })}
                         label="Mật khẩu"
                         type="password"
                         fullWidth
-                        value={password}
-                        onChange={(e)=> setPassword(e.target.value)}
                         margin="normal"
                     />
                     <div className="mt-4">
                         <Button variant="contained" className="w-full" type="submit">Đăng nhập</Button>
                     </div>
-                </form>
-            </div>
+                </Box>
+            </Box>
         </div>
     );
 };

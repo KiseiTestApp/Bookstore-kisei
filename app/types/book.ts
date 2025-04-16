@@ -11,6 +11,8 @@ export interface Book {
     discounted: number;
     imageFile?: File | null;
     imageUrl: string | null;
+    averageRating?: number;
+    reviewCount?: number;
     quantity_bought?: number;
 }
 

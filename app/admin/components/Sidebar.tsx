@@ -2,8 +2,7 @@
 
 import Container from "@mui/material/Container";
 import IconLinkList from "@/app/components/IconLinkList";
-import {signOut} from "firebase/auth";
-import {auth} from "@/lib/firebase/config";
+import {useAuth} from "@/app/context/AuthProviderContext";
 import {useRouter} from "next/navigation";
 import {Button} from "@mui/material";
 import ExittoIcon from "@mui/icons-material/ExitToApp";
@@ -13,9 +12,10 @@ import Image from "next/image";
 
 export default function Sidebar(){
     const router = useRouter();
+    const {logout} = useAuth();
     const handleSignout = async () => {
         try {
-            await signOut(auth);
+            await logout();
             console.log("User signed out");
             router.push("/admin/sign-in");
         } catch (error) {

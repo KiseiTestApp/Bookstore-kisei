@@ -15,6 +15,7 @@ import BookImage from "@/app/book-details/components/BookImage";
 import BookPriceDisplay from "@/app/book-details/components/BookPriceDisplay";
 import BookMetadata from "@/app/book-details/components/BookMetadata";
 import PurchaseBox from "@/app/book-details/components/PurchaseBox";
+import ReviewList from "@/app/book-details/components/ReviewList";
 
 
 export default function BookDetails({book}: { book: Book }) {
@@ -39,12 +40,13 @@ export default function BookDetails({book}: { book: Book }) {
         }
     }
 
+
     return (
         <Box marginX={12} marginY={6}>
             <Box marginBottom={2}>
                 <Breadcrumb lastLabel={book.title || 'Không tìm thấy được sách'}/>
             </Box>
-            <Grid container spacing={2} className=" items-start">
+            <Grid container spacing={2} className=" items-start" marginBottom={2}>
                 <Grid container size={4} className="bg-white rounded-md px-4 py-4 "
                       sx={{position: 'sticky', top: '0', height: 'fit-content'}}>
                     <BookImage imageUrl={book.imageUrl || ''} title={book.title || ''}/>
@@ -69,6 +71,11 @@ export default function BookDetails({book}: { book: Book }) {
                     />
                 </Grid>
             </Grid>
+            <ReviewList
+                bookId={book.id}
+                averageRating={book.averageRating || 0}
+                reviewCount={book.reviewCount || 0}
+            />
         </Box>
     );
 }

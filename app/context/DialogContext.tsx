@@ -23,7 +23,6 @@ export const DialogProvider = ({children} : {children: React.ReactNode}) => {
 
     const [open, setOpen] = useState(false);
     const [dialogOptions, setDialogOptions] = useState<DialogOptions | null>(null);
-
     const confirmDialog = (options: DialogOptions) => {
         setDialogOptions({
             showConfirmButton: true,
@@ -40,6 +39,7 @@ export const DialogProvider = ({children} : {children: React.ReactNode}) => {
         handleClose();
     };
     return (
+
         <DialogContext.Provider value={{confirmDialog}}>
             {children}
             <Dialog open={open} onClose={handleClose} maxWidth='lg'>

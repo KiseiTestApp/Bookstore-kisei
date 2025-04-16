@@ -15,8 +15,9 @@ type AuthContextType = {
     user: User | null;
     role: string | null;
     loading: boolean;
-    signIn: (email: string, password: string, requiredRole?: string) => Promise<void>;
+    signIn: (email: string, password: string) => Promise<void>;
     signUp: (email: string, password: string, username: string, phoneNumber: string) => void;
+    adminSignIn: (email: string, password: string) => Promise<void>;
     changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<{success: boolean, error?: any}>;
     logout: () => Promise<void>;
     error: string | null;
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
     loading: true,
     signIn: async () => {},
     signUp: async () => {},
+    adminSignIn: async () => {},
     changePassword: async () => ({success: false}),
     logout: async () => {},
     error: null,
@@ -61,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     //Chức năng đăng nhập
-    const signIn = async (email: string, password: string, requiredRole?: string) : Promise<void> => {
+    const signIn = async (email: string, password: string) : Promise<void> => {
         setLoading(true);
         setError(null);
         try {
@@ -70,17 +72,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userDocRef = doc(db, "users", user.uid);
             const userDocSnapshot = await getDoc(userDocRef);
             const userRole = userDocSnapshot.data()?.role || "user";
-            if (requiredRole && userRole !== requiredRole) {
-                await auth.signOut();
-                showSnackbar('Từ chối truy cập. Vai trò không hợp lệ', 'error');
-                return;
-            }
+            console.log('User role:', userRole);
             if (!userDocSnapshot.exists()) {
-                await auth.signOut();
-                showSnackbar('Tài khoản không hợp lệ', 'error');
-                router.push('/');
+                await setDoc(userDocRef, {
+                    email: user.email,
+                    role: "user",
+                    createdAt: new Date().toISOString(),
+                });
             }
             const idToken = await user.getIdToken(true);
+            console.log("ID Token retrieved:", idToken ? "Yes" : "No");
             document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
         } catch (err: any) {
             const errorMessage = getAuthErrorMessage(err.code) || "Đăng nhập thất bại";
@@ -112,9 +113,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 createdAt: new Date().toISOString(),
             });
             const idToken = await user.getIdToken();
+
             document.cookie = `idToken=${idToken}; path=/; secure; samesite=strict`;
+
         } catch (err: any) {
             setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const adminSignIn = async (email: string, password: string): Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+            const userRole = userDocSnapshot.data()?.role;
+            console.log('User role:', userRole);
+            if (userRole !== 'admin') {
+                await auth.signOut();
+                throw new Error('ADMIN_ACCESS_REQUIRED');
+            }
+            const idToken = await user.getIdToken(true);
+            document.cookie = `idToken=${idToken}; path=/admin; max-age=${60 * 60}; secure; samesite=strict`;
+            console.log("ID Token retrieved:", idToken ? "Yes" : "No");
+        } catch (err: any) {
+            console.error("Admin sign-in failed:", err);
+            const errorMessage = err.message === 'ADMIN_ACCESS_REQUIRED'
+                ? 'Chỉ quản trị viên mới có thể truy cập đường dẫn này'
+                : getAuthErrorMessage(err.code) || 'Admin authentication failed';
+
+            showSnackbar(errorMessage, "error");
             throw err;
         } finally {
             setLoading(false);
@@ -172,6 +207,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setError(null);
         try {
             await auth.signOut();
+            await fetch('/api/logout', {method: 'POST'});
             setUser(null);
             setRole(null);
             document.cookie = 'idToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; Samesite=Strict';
@@ -188,7 +224,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, role, loading, signIn, signUp, error, changePassword, logout }}>
+        <AuthContext.Provider value={{ user, role, loading, signIn, signUp, adminSignIn, error, changePassword, logout }}>
             {children}
         </AuthContext.Provider>
     );

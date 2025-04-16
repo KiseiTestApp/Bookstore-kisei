@@ -18,6 +18,8 @@ export async function getBookById(bookId: string): Promise<Book | null> {
                 publisher: bookDoc.data().publisher || 'Unknown',
                 publishYear: bookDoc.data().publishYear || null,
                 genre: bookDoc.data().genre || 'Unknown',
+                averageRating: bookDoc.data()?.averageRating || 0,
+                reviewCount: bookDoc.data().reviewCount || 0,
             };
         }
         return null;

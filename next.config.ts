@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
-    trailingSlash: true,
 };
 
 module.exports = nextConfig;
