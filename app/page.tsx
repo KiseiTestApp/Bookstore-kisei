@@ -20,7 +20,7 @@ export default function Home() {
     return (
         <main className="py-4 mx-12">
             {loading ? (
-                <Box className='flex w-full h-full justify-center items-center'>
+                <Box className='flex w-full h-auto justify-center'>
                     <CircularProgress color='primary' />
                 </Box>
             ) : (

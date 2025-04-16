@@ -10,7 +10,7 @@ export async function GET(req: Request) {
         const token = cookieStore.get('adminToken')?.value || cookieStore.get('idToken')?.value;
         if (!token) {
             return NextResponse.json(
-                {error: "No token found."},
+                {error: "No token found.", role: 'guest'},
                 {status: 401}
             )
         }
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         console.log(userData?.role);
         if (userData?.role !== "admin") {
             return NextResponse.json(
-                {error: "Insufficient role found."},
+                {error: "Insufficient role found.", role: 'user'},
                 {status: 403}
             )
         }

@@ -240,7 +240,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             await fetch('/api/logout', {method: 'POST'});
             setUser(null);
             setRole(null);
-            document.cookie = 'idToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; Samesite=Strict';
+            document.cookie = 'idToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             localStorage.removeItem('idToken');
             showSnackbar("Đăng xuất thành công", "success");
             setTimeout(() => router.push('/'), 1000);

@@ -29,7 +29,7 @@ export default function SignIn() {
             showSnackbar('Đăng nhập thành công', 'success', {
                 vertical: 'top', horizontal: 'center'
             })
-            setTimeout(() => router.push('/'), 2500);
+            setTimeout(() => router.push('/'), 500);
         } catch (error) {
             console.log(error);
         }

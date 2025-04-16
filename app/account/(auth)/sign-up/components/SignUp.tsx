@@ -29,7 +29,7 @@ export default function SignUp() {
         try {
             await signUp(data.email, data.password, data.username, data.phoneNumber);
             showSnackbar('Đăng ký thành công', 'success', {vertical: 'top', horizontal: 'center'});
-            setTimeout(() => router.push('/'), 2500);
+            setTimeout(() => router.push('/'), 500);
         } catch (error) {
             showSnackbar(error instanceof Error ? error.message : 'Đăng ký thất bại', 'error')
         }

@@ -8,19 +8,19 @@ export async function POST() {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
-                path: '/admin',
-                expires: new Date(0),
+                path: '/',
+                maxAge: -1,
             }),
             serialize('adminToken', '', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
                 path: '/admin',
-                expires: new Date(0),
+                maxAge: -1,
             }),
             serialize('isAdmin', '', {
                 path: '/admin',
-                expires: new Date(0),
+                maxAge: -1,
             })
         ]
         const response = NextResponse.json({ message: 'Logged out' });

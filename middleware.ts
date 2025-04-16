@@ -13,10 +13,16 @@ export async function middleware(req: NextRequest) {
                 'x-middleware-request': 'true'
             }
         });
+        const responseData = await response.json();
         if (!response.ok) {
-            console.log('Error occured with status code: ' + response.status);
+            throw new Error(responseData.error || 'Authorization failed.');
         }
-        const { role } = await response.json();
+        const { role, error } = await response.json();
+        if (role !== 'admin') {
+            const url = req.nextUrl.clone();
+            url.pathname = error === 'Unauthorized' ? '/admin/sign-in' : 'no-access';
+            return NextResponse.redirect(url);
+        }
         const headers = new Headers(req.headers);
         headers.set('x-user-role', role);
 
@@ -28,7 +34,7 @@ export async function middleware(req: NextRequest) {
     } catch (error: any) {
         console.log('Admin middleware error', error);
         const url = req.nextUrl.clone();
-        url.pathname = error.message.includes('401') ? '/admin/sign-in' : '/no-access';
+        url.pathname = error.message.includes('Unauthorized') ? '/admin/sign-in' : 'no-access';
         return NextResponse.redirect(url);
     }
 }

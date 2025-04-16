@@ -3,7 +3,7 @@ import { serialize } from 'cookie';
 
 export async function POST(request: Request) {
     const {token} = await request.json();
-    const cookie = serialize('adminToken', token, {
+    const cookie = serialize('idToken', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
