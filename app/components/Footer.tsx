@@ -14,19 +14,24 @@ export default function Footer() {
         return null;
     }
     return (
-        <Box bgcolor='white' padding={{ xs: 3, md: 4, lg: 6}}>
+        <Box bgcolor='white' padding={{ xs: 3, md: 4, lg: 6}} minHeight={250} marginTop={2}>
             <Box display="flex"
                  justifyContent="space-evenly"
                  flexDirection={{ xs: 'column', md: 'row'}}
                  gap={{ xs: 4, md: 0}}
                  alignItems="flex-start"
             >
-                    <Image
-                        src="/logoipsum-332.svg"
-                        alt="logo"
-                        width={105.6}
-                        height={52.9}
-                    />
+                    <Box position='relative' width='10%' height='auto' sx={{ aspectRatio: '2/1'}}>
+                        <Image
+                            src="/logoipsum-332.svg"
+                            alt="logo"
+                            fill
+                            style={{ objectFit: "contain" }}
+                            priority
+                            quality={75}
+                            loading='eager'
+                        />
+                    </Box>
                     <Box>
                         <Typography variant="h6" color='textPrimary' marginBottom={1}>Tìm hiểu thêm</Typography>
                         <Box display="flex" flexDirection="column" gap={1}>

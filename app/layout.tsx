@@ -39,9 +39,6 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
   return (
 
           <html lang="en">
-            <head>
-                <link rel='preconnect' href='https://firebasestorage.googleapis.com' />
-            </head>
             <body className={`${inter.className} antialiased bg-gray-100`}>
             <DialogProvider>
                 <SnackbarProvider>
@@ -49,15 +46,11 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
                         <AppRouterCacheProvider>
                             <ThemeProvider theme={theme}>
                                 <main className="max-w-screen-2xl mx-auto min-h-screen flex flex-col">
-                                    <header>
-                                        <Header />
-                                    </header>
+                                    <Header />
                                     <div className="grow">
                                         {children}
                                     </div>
-                                    <footer className="mt-4 bottom-0 w-full">
-                                        <Footer />
-                                    </footer>
+                                    <Footer />
                                 </main>
                             </ThemeProvider>
                         </AppRouterCacheProvider>

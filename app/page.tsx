@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react";
 import HeroImages from "@/app/components/HeroImages";
 import Collection from "@/app/components/Collection";
 import useFetchBooks from "@/app/utils/products/useFetchBooks";
@@ -18,16 +17,19 @@ const ProductContainer = dynamic(() => import("@/app/components/ProductContainer
 export default function Home() {
     const {books} = useFetchBooks();
     const {loading} = useAuth();
-    if (loading) return (
-        <Box className="flex w-full h-full justify-center align-middle p-6">
-            <CircularProgress color="primary" />
-        </Box>
-    )
     return (
-        <main className=" py-4 mx-12">
-            <HeroImages />
-            <Collection />
-            <ProductContainer books={books} />
+        <main className="py-4 mx-12">
+            {loading ? (
+                <Box className='flex w-full h-full justify-center items-center'>
+                    <CircularProgress color='primary' />
+                </Box>
+            ) : (
+                <Box>
+                    <HeroImages />
+                    <Collection />
+                    <ProductContainer books={books} />
+                </Box>
+            )}
         </main>
     );
 }
