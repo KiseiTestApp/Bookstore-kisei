@@ -47,8 +47,7 @@ export default function BookDetails({book}: { book: Book }) {
                 <Breadcrumb lastLabel={book.title || 'Không tìm thấy được sách'}/>
             </Box>
             <Grid container spacing={2} className=" items-start" marginBottom={2}>
-                <Grid container size={{md: 12, lg: 4}} className="bg-white rounded-md px-4 py-4 "
-                      sx={{position: 'sticky', top: '0', height: 'fit-content'}}>
+                <Grid container size={{md: 12, lg: 4}} className="bg-white rounded-md px-4 py-4">
                     <BookImage imageUrl={book.imageUrl || ''} title={book.title || ''}/>
                 </Grid>
                 <Grid size={{ md: 12, lg: 5}}>

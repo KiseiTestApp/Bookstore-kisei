@@ -10,12 +10,17 @@ import theme from "@/app/theme";
 import {useSnackbar} from "@/app/context/SnackbarContext";
 
 export const ReviewForm = (bookId: string) => {
-    const {confirmDialog} = useDialog();
+    const {confirmDialog, closeDialog} = useDialog();
     const {showSnackbar} = useSnackbar();
-    const openReviewDialog = (onSuccess? : () => void) => {
+    const openReviewDialog = () => {
         confirmDialog({
             title: 'Viết đánh giá sản phẩm',
-            content: <ReviewFormContent bookId={bookId} showSnackbar={showSnackbar} onSuccess={onSuccess}  />,
+            content:
+                <ReviewFormContent
+                    bookId={bookId}
+                    showSnackbar={showSnackbar}
+                    onSuccess={() => {closeDialog()}}
+                />,
             showConfirmButton: false,
             showCancelButton: false,
         })

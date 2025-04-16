@@ -13,10 +13,10 @@ type ReviewListProps = {
     bookId: string;
     averageRating: number;
     reviewCount: number;
-    onReviewAdded?: () => void;
+
 }
 
-export default function ReviewList({bookId, averageRating, reviewCount, onReviewAdded}: ReviewListProps) {
+export default function ReviewList({bookId, averageRating, reviewCount}: ReviewListProps) {
     const {reviews, isLoading, errors} = useBookReviews(bookId);
     const {user} = useAuth();
     const {openReviewDialog} = ReviewForm(bookId);
@@ -24,16 +24,14 @@ export default function ReviewList({bookId, averageRating, reviewCount, onReview
     if (errors) return <Alert severity='error'>Lỗi gặp phải khi tải đánh giá: {errors}</Alert>;
 
     const handleOpenDialog = () => {
-        openReviewDialog(() => {
-            onReviewAdded?.();
-        });
+        openReviewDialog();
     }
 
     return (
         <Box bgcolor='white' borderRadius='md' padding={2}>
             <Box>
                 <Typography variant='h6' color='textPrimary'>Đánh giá sản phẩm</Typography>
-                <Box display='flex' justifyContent='space-around' alignItems='center' paddingY={2}>
+                <Box display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' paddingY={2}>
                     <Box textAlign='center'>
                         <Typography variant='h5'>
                             {averageRating}/5

@@ -15,6 +15,7 @@ type DialogOptions = {
 
 type DialogContextType = {
     confirmDialog: (options: DialogOptions) => void;
+    closeDialog: () => void;
 };
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
@@ -32,15 +33,16 @@ export const DialogProvider = ({children} : {children: React.ReactNode}) => {
         setOpen(true);
     }
 
-    const handleClose = () => setOpen(false);
 
+    const handleClose = () => setOpen(false);
+    const closeDialog = () => setOpen(false);
     const handleConfirm = () => {
         dialogOptions?.onConfirm?.();
         handleClose();
     };
     return (
 
-        <DialogContext.Provider value={{confirmDialog}}>
+        <DialogContext.Provider value={{confirmDialog, closeDialog}}>
             {children}
             <Dialog open={open} onClose={handleClose} maxWidth='lg'>
                 <DialogTitle>{dialogOptions?.title || "Xác nhận"}</DialogTitle>
