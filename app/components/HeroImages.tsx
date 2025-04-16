@@ -18,7 +18,6 @@ import hero5 from '@/public/hero_images_opti/hero5.webp';
 import dynamic from "next/dynamic";
 const LazySlide = dynamic(() => import('@/app/components/SlideImage'), {
     ssr: false,
-    loading: () => <div className='w-full h-full bg-gray-300 animate-pulse' />
 })
 
 export default function HeroImages() {

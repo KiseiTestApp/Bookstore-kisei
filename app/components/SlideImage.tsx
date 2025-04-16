@@ -11,7 +11,7 @@ export default function SlideImage({src, alt, loading}: SlideImageProps) {
         <Image
             src={src}
             alt={alt}
-            className='w-full h-full object-cover'
+            objectFit="cover"
             fill
             loading={loading}
             placeholder='blur'
