@@ -7,7 +7,7 @@ publish = ".next"
 package = "@netlify/plugin-nextjs"
 
 [build.environment]
-NODE_VERSION = '18'
+NODE_VERSION = '22'
 NODE_ENV = 'production'
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
