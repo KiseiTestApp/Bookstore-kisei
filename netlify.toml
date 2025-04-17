@@ -1,13 +1,13 @@
 # example netlify.toml
 [build]
-command = "npm run build"
+command = "npm ci && npm run build"
 publish = ".next"
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"
 
 [build.environment]
-NODE_VERSION = '20'
+NODE_VERSION = '18'
 NODE_ENV = 'production'
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
