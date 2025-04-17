@@ -1,9 +1,6 @@
 
 import Box from '@mui/material/Box'
-import dynamic from "next/dynamic";
-const FormCreateBook = dynamic(() => import('@/app/admin/products/components/FormCreateBook'), {
-    ssr: false,
-})
+import FormCreateBook from "@/app/admin/products/components/FormCreateBook";
 
 export default function Page() {
     return (
