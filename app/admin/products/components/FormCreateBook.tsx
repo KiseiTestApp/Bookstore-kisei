@@ -1,4 +1,3 @@
-"use client";
 
 import {
     TextField,
@@ -16,7 +15,6 @@ import {Box, Stack} from "@mui/system";
 import Container from "@mui/material/Container";
 import Image from "next/image";
 import {genresList} from "@/app/admin/components/genresList";
-import {useRouter} from "next/navigation";
 import {Controller} from "react-hook-form";
 
 
@@ -31,7 +29,6 @@ export default function FormCreateBook() {
         onSubmit,
         watch,
     } = useBookWrite();
-    const router = useRouter();
     const imageUrl = watch('imageUrl');
 
     return (
@@ -200,7 +197,7 @@ export default function FormCreateBook() {
                                 variant="outlined"
                                 color="inherit"
                                 className="flex w-1/2"
-                                onClick={() => router.push(`/admin/products`)}
+                                onClick={() => history.back()}
                             >
                                 Hủy
                             </Button>
