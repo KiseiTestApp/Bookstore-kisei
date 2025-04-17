@@ -34,8 +34,15 @@ export const OrderDetails = ({order}: OrderDetailsProps) => {
                         <Typography variant='h6' fontWeight={400} marginBottom={0.5}>{item.title}</Typography>
                         <Typography variant='body2' color='textSecondary' marginBottom={0.5}>
                             Số lượng: {item.quantity}</Typography>
-                        <Typography variant='body2' color='textSecondary' marginBottom={0.5}>
-                            Đơn giá: {item.discounted.toLocaleString('vi-VN')}VNĐ</Typography>
+                        {item.discounted > 0 ? (
+                            <Typography variant='body2' color='textSecondary' marginBottom={0.5}>
+                                Đơn giá: {item.discounted.toLocaleString('vi-VN')}VNĐ
+                            </Typography>
+                        ) : (
+                            <Typography variant='body2' color='textSecondary' marginBottom={0.5}>
+                                Đơn giá: {item.price.toLocaleString('vi-VN')}VNĐ
+                            </Typography>
+                        )}
                         <Typography variant='body1'>Tạm tính: {item.subtotal.toLocaleString('vi-VN')}VNĐ</Typography>
                     </Box>
                 </Box>

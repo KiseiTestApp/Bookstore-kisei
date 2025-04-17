@@ -15,7 +15,7 @@ interface PurchaseBoxProps {
 }
 
 export default function PurchaseBox({book, quantity, onQuantityChangeAction, onAddtoCartAction, userId}: PurchaseBoxProps) {
-    const discountedPrice = book?.discounted || 0;
+    const actualPrice = book.discounted > 0 ? book.discounted : book.price ;
     const router = useRouter();
     const handleBuyNowAction = async () => {
         try {
@@ -31,7 +31,7 @@ export default function PurchaseBox({book, quantity, onQuantityChangeAction, onA
             <Box className="mt-3">
                 <Typography variant="h6" fontWeight={400}>Tạm tính</Typography>
                 <Typography variant="h5" fontWeight={600}>
-                    {Math.round(quantity * discountedPrice).toLocaleString('vi-VN')}đ
+                    {Math.round(quantity * actualPrice).toLocaleString('vi-VN')}đ
                 </Typography>
             </Box>
             <Stack spacing={1.5} className="mt-4">
