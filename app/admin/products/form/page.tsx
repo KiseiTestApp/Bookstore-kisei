@@ -1,6 +1,6 @@
 
 import Box from '@mui/material/Box'
-import FormCreateBook from "@/app/admin/products/components/FormCreateBook"
+import FormCreateBook from "@/app/admin/products/components/FormCreateBook";
 
 export default function Page() {
     return (

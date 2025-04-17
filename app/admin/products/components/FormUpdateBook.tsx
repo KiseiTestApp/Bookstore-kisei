@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid2";
 import Image from "next/image";
 import { genresList } from "@/app/admin/components/genresList";
 
-const BookUpdateForm = () => {
+const FormUpdateBook = () => {
     const {
         book,
         loading,
@@ -179,4 +179,4 @@ const BookUpdateForm = () => {
     );
 };
 
-export default BookUpdateForm;
+export default FormUpdateBook;
