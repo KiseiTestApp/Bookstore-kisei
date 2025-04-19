@@ -31,29 +31,45 @@ export default function CheckoutForm() {
         prepareOrderData,
     } = checkoutForm;
 
+    const handleOrderFailure = async (orderId: string) => {
+        try {
+            await fetch('/api/cancel-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({orderId})
+            });
+        } catch (error) {
+            console.error('Failed to cancel order:', error);
+            throw error;
+        }
+    };
+
     const onSubmit = async (data: CheckoutFormValues) => {
         setIsSubmitting(true);
         let orderId: string | undefined;
         try {
-            const orderData = prepareOrderData(data, cartItems, totalPrice);
-            const orderResult = await submitOrder(
-                orderData,
-                cartItems,
-                totalPrice,
-                user?.uid,
-                clearCart,
-            );
-            if (!orderResult.success || !orderResult.orderId) {
-                showSnackbar(orderResult.error || 'Đặt hàng thất bại', 'error');
+            if (data.paymentMethod !== 'QR Pay') {
+                const orderData = prepareOrderData(data, cartItems, totalPrice);
+                const orderResult = await submitOrder(
+                    orderData,
+                    cartItems,
+                    totalPrice,
+                    user?.uid,
+                    clearCart,
+                );
+                if (!orderResult.success || !orderResult.orderId) {
+                    showSnackbar(orderResult.error || 'Đặt hàng thất bại', 'error');
+                }
+                showSnackbar('Đặt hàng thành công', 'success');
+                return;
             }
             if (data.paymentMethod === 'QR Pay') {
                 const vnpayResponse = await fetch('/api/create-vnpay', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        order_id: orderResult.orderId,
                         amount: totalPrice,
-                        return_url: `${window.location.origin}/payment/return?order_id=${orderId}`,
+                        order_desc: 'Thanh toán cho đơn hàng',
                     }),
                 })
                 const vnpayData = await vnpayResponse.json();
@@ -61,25 +77,31 @@ export default function CheckoutForm() {
                     window.location.href = vnpayData.data;
                     return;
                 }
-                throw new Error('Thanh toán mã VNPay QR thất bại');
-            }
-            if (orderResult.success) {
-                showSnackbar('Đặt hàng thành công', 'success');
+                const orderData = prepareOrderData(data, cartItems, totalPrice);
+                const orderResult = await submitOrder(
+                    orderData,
+                    cartItems,
+                    totalPrice,
+                    user?.uid,
+                    clearCart,
+                );
+
+                if (!orderResult.success || !orderResult.orderId) {
+                    throw new Error(orderResult.error || 'Đặt hàng thất bại');
+                }
+                orderId = orderResult.orderId;
+                window.location.href = `${vnpayData.data}&order_id=${orderId}`;
             }
         } catch (error) {
             console.error('Error submitting order', error);
             if (orderId) {
                 try {
-                    await fetch('/api/cancel-order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({orderId})
-                    })
+                    await handleOrderFailure(orderId);
                 } catch (cancelError) {
                     console.error('Failed to cancel order', cancelError);
                 }
             }
-            showSnackbar('Đã có lỗi xảy ra khi gửi đơn hàng', 'error');
+            showSnackbar(error instanceof  Error ? error.message : 'Đã có lỗi xảy ra khi gửi đơn hàng', 'error');
         } finally {
             setIsSubmitting(false);
         }
