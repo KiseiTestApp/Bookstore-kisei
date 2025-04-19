@@ -11,6 +11,7 @@ export async function GET(request: Request) {
         searchParams.forEach((value, key) => {
             vnp_Params[key] = value;
         })
+        console.log("All Params:", vnp_Params);
         // 1. Tạo checksum để đối chiếu và xác thực khóa
         const secureHash = vnp_Params.vnp_SecureHash;
         delete vnp_Params.vnp_SecureHash;
@@ -23,27 +24,14 @@ export async function GET(request: Request) {
             }, {} as Record<string, string>);
         const signData =  new URLSearchParams(sortedParams).toString();
         const secretKey = process.env.VNP_HASH_SECRET as string;
-        const encoder = new TextEncoder();
-        const key = await crypto.subtle.importKey(
-            'raw',
-            encoder.encode(secretKey),
-            {name: 'HMAC', hash: 'SHA-512'},
-            false,
-            ['sign']
-        )
-        const signature = await crypto.subtle.sign(
-            'HMAC',
-            key,
-            encoder.encode(signData),
-        )
-        const calculatedHash = Array.from(new Uint8Array(signature))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
+        const hmac = crypto.createHmac("sha512", secretKey);
+        hmac.update(signData);
+        const calculatedHash = hmac.digest("hex");
 
         console.log("Received hash:", secureHash);
         console.log("Calculated hash:", calculatedHash);
 
-        if (secureHash.toLowerCase() !== calculatedHash.toLowerCase()) {
+        if (secureHash !== calculatedHash) {
             console.error('invalid signature received');
             return NextResponse.json(
                 {RspCode: '97', Message: 'Chữ ký không hợp lệ'},
