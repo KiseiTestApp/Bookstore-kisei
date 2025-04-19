@@ -64,6 +64,18 @@ export default function CheckoutForm() {
                 return;
             }
             if (data.paymentMethod === 'QR Pay') {
+                const orderData = prepareOrderData(data, cartItems, totalPrice);
+                const orderResult = await submitOrder(
+                    orderData,
+                    cartItems,
+                    totalPrice,
+                    user?.uid,
+                    clearCart,
+                );
+                if (!orderResult.success || !orderResult.orderId) {
+                    throw new Error(orderResult.error || 'Đặt hàng thất bại');
+                }
+                orderId = orderResult.orderId;
                 const vnpayResponse = await fetch('/api/create-vnpay', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -74,23 +86,11 @@ export default function CheckoutForm() {
                 })
                 const vnpayData = await vnpayResponse.json();
                 if (vnpayData.code === '00') {
-                    window.location.href = vnpayData.data;
-                    return;
+                    window.location.href = `${vnpayData.data}&order_id=${orderId}`;
+                } else {
+                    await handleOrderFailure(orderId);
+                    showSnackbar('Không thể tạo liên kết thanh toán', 'error');
                 }
-                const orderData = prepareOrderData(data, cartItems, totalPrice);
-                const orderResult = await submitOrder(
-                    orderData,
-                    cartItems,
-                    totalPrice,
-                    user?.uid,
-                    clearCart,
-                );
-
-                if (!orderResult.success || !orderResult.orderId) {
-                    throw new Error(orderResult.error || 'Đặt hàng thất bại');
-                }
-                orderId = orderResult.orderId;
-                window.location.href = `${vnpayData.data}&order_id=${orderId}`;
             }
         } catch (error) {
             console.error('Error submitting order', error);
