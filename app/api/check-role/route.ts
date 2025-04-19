@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { initAdmin } from "@/lib/firebase/firebase-admin";
+import { getFirestore } from "@/lib/firebase/firebase-admin";
+import admin from "firebase-admin";
 import {cookies} from "next/headers";
 
 export async function GET(req: Request) {
     try {
         const isMiddleware = req.headers.get('x-middleware-request') === 'true';
-        const adminApp = await initAdmin();
         const cookieStore = await cookies();
         const token = cookieStore.get('adminToken')?.value || cookieStore.get('idToken')?.value;
         if (!token) {
@@ -14,9 +14,10 @@ export async function GET(req: Request) {
                 {status: 401}
             )
         }
-        const decodedToken = await adminApp.auth().verifyIdToken(token);
-        const userDoc = await adminApp
-            .firestore()
+        const auth = admin.auth();
+        const db = getFirestore();
+        const decodedToken = await auth.verifyIdToken(token);
+        const userDoc = await db
             .collection("users")
             .doc(decodedToken.uid)
             .get();

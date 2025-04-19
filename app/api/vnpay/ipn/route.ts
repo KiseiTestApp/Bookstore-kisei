@@ -1,14 +1,12 @@
-import { getFirestore } from 'firebase-admin/firestore';
+import {getFirestore} from "@/lib/firebase/firebase-admin";
 import {NextResponse} from "next/server";
 import * as crypto from "node:crypto";
 import {getVNPayResponseMessage} from "@/app/utils/vnpayResponseCode";
 import * as querystring from "node:querystring";
 
-
-const db = getFirestore();
-
 export async function GET(request: Request) {
     try {
+        const db = getFirestore();
         const {searchParams} = new URL(request.url);
         const vnp_Params: Record<string, string> = {};
         searchParams.forEach((value, key) => {

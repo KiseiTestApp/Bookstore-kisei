@@ -1,38 +1,29 @@
 import admin from 'firebase-admin';
 
-interface FirebaseAdminAppProps {
-    projectId: string;
-    clientEmail: string;
-    privateKey: string;
-}
-
 function formatPrivateKey(key: string) {
     return key.replace(/\\n/g, "\n");
 }
 
-export function FirebaseAdminApp(props: FirebaseAdminAppProps) {
-    const privateKey = formatPrivateKey(props.privateKey);
+export function initAdmin() {
     if (admin.apps.length > 0) {
         return admin.app();
     }
-    const cert = admin.credential.cert({
-        projectId: props.projectId,
-        clientEmail: props.clientEmail,
-        privateKey,
+
+    const privateKey = formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY as string);
+
+    const app = admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey
+        }),
+        databaseURL: "https://bookstore-kisei-default-rtdb.asia-southeast1.firebasedatabase.app"
     });
-    return admin.initializeApp({
-        credential: cert,
-        projectId: props.projectId,
-    })
+
+    return app;
 }
 
-export async function initAdmin() {
-
-    const props = {
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL as string,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY as string,
-        databaseURL: "https://bookstore-kisei-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
-    return FirebaseAdminApp(props);
+export function getFirestore() {
+    const app = initAdmin();
+    return admin.firestore(app);
 }
