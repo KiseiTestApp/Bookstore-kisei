@@ -68,17 +68,6 @@ export default function CheckoutForm() {
             }
         } catch (error) {
             console.error('Error submitting order', error);
-            if (orderId) {
-                try {
-                    await fetch('/api/cancel-order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({orderId})
-                    })
-                } catch (cancelError) {
-                    console.error('Failed to cancel order', cancelError);
-                }
-            }
             showSnackbar('Đã có lỗi xảy ra khi gửi đơn hàng', 'error');
         } finally {
             setIsSubmitting(false);

@@ -1,7 +1,8 @@
 'use client'
 
-import {Suspense, useEffect, useState} from 'react';
+import {Suspense} from 'react';
 import {useSearchParams, useRouter} from "next/navigation";
+import {getVNPayResponseMessage} from "@/app/utils/vnpayResponseCode";
 import {Box, Typography, Button, CircularProgress} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -9,18 +10,10 @@ import ErrorIcon from '@mui/icons-material/Error';
 function PaymentResultContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
-    const [orderId, setOrderId] = useState<string | null>(null);
-    useEffect(() => {
-        const vnp_ResponseCode = searchParams.get('vnp_ResponseCode');
-        const orderIdParam = searchParams.get('vnp_TxnRef');
-        setOrderId(orderIdParam);
-        if (vnp_ResponseCode === '00') {
-            setStatus('success');
-        } else {
-            setStatus('failed');
-        }
-    },[searchParams]);
+    const responseCode= searchParams.get('vnp_ResponseCode');
+    const orderId = searchParams.get('vnp_TxnRef');
+    const message = responseCode ? getVNPayResponseMessage(responseCode) : 'Không xác định được mã phản hồi';
+    const status = responseCode === null ? 'loading' : responseCode === '00' ? 'success' : 'failed';
     return (
         <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' minHeight='70vh' textAlign='center' padding={3}>
             {status === 'loading' && (
@@ -50,7 +43,8 @@ function PaymentResultContent() {
                         Thanh toán không thành công
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>
-                        Thanh toán cho đơn hàng #{orderId} đã bị hủy hoặc thất bại.
+                        Thanh toán cho đơn hàng đã bị hủy hoặc thất bại.
+                        Nội dung: <Typography variant='body1'>{message}</Typography>
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <Button variant="contained" color='primary'>
