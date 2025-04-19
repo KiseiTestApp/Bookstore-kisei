@@ -12,16 +12,7 @@ export async function GET(request: Request) {
         searchParams.forEach((value, key) => {
             vnp_Params[key] = value;
         })
-
-        // 1. Kiểm tra xem url có đủ tham số hợp lệ không
-        if (!vnp_Params.vnp_Amount || !vnp_Params.vnp_ResponseCode || !vnp_Params.vnp_TxnRef) {
-            return NextResponse.json(
-                {RspCode: '99', Message: 'Thiếu các thông số yêu cầu'},
-                {status: 400}
-            )
-        }
-
-        // 2. Tạo checksum để đối chiếu và xác thực khóa
+        // 1. Tạo checksum để đối chiếu và xác thực khóa
         const secureHash = vnp_Params.vnp_SecureHash;
         delete vnp_Params.vnp_SecureHash;
         delete vnp_Params.vnp_SecureHashType;
@@ -44,12 +35,21 @@ export async function GET(request: Request) {
             )
         }
 
-        // 3: Xử lý thông tin đơn hàng
+        // 2: Xử lý thông tin đơn hàng
         const orderId = vnp_Params.vnp_TxnRef as string;
         const responseCode = vnp_Params.vnp_ResponseCode;
         const orderRef = db.collection("orders").doc(orderId);
+        const orderDoc = await orderRef.get();
 
-        // 4: Cập nhật lên Firebase
+        if (!orderDoc.exists) {
+            console.error(`Order ${orderId} not found in Firestore`);
+            return NextResponse.json(
+                {RspCode: '01', Message: 'Không tìm thấy đơn hàng'},
+                {status: 404}
+            )
+        }
+
+        // 3: Cập nhật lên Firebase
         if (responseCode === '00') {
             await orderRef.update({
                 status: 'paid',
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
             })
         } else {
             await orderRef.update({
-                status: 'failed',
+                status: 'cancelled',
                 paymentErrorCode: responseCode,
                 paymentMessage: getVNPayResponseMessage(responseCode),
             })
