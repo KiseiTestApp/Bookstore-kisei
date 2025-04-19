@@ -2,7 +2,6 @@ import {getFirestore} from "@/lib/firebase/firebase-admin";
 import {NextResponse} from "next/server";
 import * as crypto from "node:crypto";
 import {getVNPayResponseMessage} from "@/app/utils/vnpayResponseCode";
-import * as querystring from "node:querystring";
 
 export async function GET(request: Request) {
     try {
@@ -22,12 +21,29 @@ export async function GET(request: Request) {
                 acc[key] = vnp_Params[key];
                 return acc;
             }, {} as Record<string, string>);
-        const signData =  querystring.stringify(sortedParams);
+        const signData =  new URLSearchParams(sortedParams).toString();
         const secretKey = process.env.VNP_HASH_SECRET as string;
-        const signed = crypto.createHmac('sha512', secretKey)
-            .update(signData)
-            .digest('hex');
-        if (secureHash !== signed) {
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(secretKey),
+            {name: 'HMAC', hash: 'SHA-512'},
+            false,
+            ['sign']
+        )
+        const signature = await crypto.subtle.sign(
+            'HMAC',
+            key,
+            encoder.encode(signData),
+        )
+        const calculatedHash = Array.from(new Uint8Array(signature))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+        console.log("Received hash:", secureHash);
+        console.log("Calculated hash:", calculatedHash);
+
+        if (secureHash.toLowerCase() !== calculatedHash.toLowerCase()) {
             console.error('invalid signature received');
             return NextResponse.json(
                 {RspCode: '97', Message: 'Chữ ký không hợp lệ'},
