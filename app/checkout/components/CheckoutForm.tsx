@@ -33,7 +33,6 @@ export default function CheckoutForm() {
 
     const onSubmit = async (data: CheckoutFormValues) => {
         setIsSubmitting(true);
-        let orderId: string | undefined;
         try {
             const orderData = prepareOrderData(data, cartItems, totalPrice);
             const orderResult = await submitOrder(
@@ -53,7 +52,7 @@ export default function CheckoutForm() {
                     body: JSON.stringify({
                         order_id: orderResult.orderId,
                         amount: totalPrice,
-                        return_url: `${window.location.origin}/payment/return?order_id=${orderId}`,
+                        return_url: `${window.location.origin}/payment/return?order_id=${orderResult.orderId}`,
                     }),
                 })
                 const vnpayData = await vnpayResponse.json();
