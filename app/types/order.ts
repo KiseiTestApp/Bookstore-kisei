@@ -34,7 +34,7 @@ export interface OrderFormData {
     customer: CustomerData;
     shippingAddress: AddressData;
     shippingMethod: "standard" | "pickup";
-    paymentMethod: "COD" | "Bank transfer";
+    paymentMethod: "COD" | "Bank transfer" | 'QR Pay';
     status: "pending";
     note: string;
 }
@@ -49,7 +49,7 @@ export interface OrderDocument {
     createdAt: Timestamp;
     status: "pending" | "paid" | "cancelled";
     shippingMethod: "standard" | "pickup";
-    paymentMethod: "COD" | "Bank transfer";
+    paymentMethod: "COD" | "Bank transfer" | 'QR Pay';
     userId?: string;
     updatedAt?: Timestamp;
     note: string;

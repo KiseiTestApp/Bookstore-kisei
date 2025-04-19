@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 
 
 import dynamic from "next/dynamic";
-import CartItemList from "@/app/cart/component/cartItemList";
+import CartItemsList from "@/app/cart/component/CartItemsList";
 import { Stack } from "@mui/system";
 import Grid from "@mui/material/Grid2";
 import {MoonLoader} from "react-spinners";
@@ -84,7 +84,7 @@ export default function CartContent() {
                             <div className="col-span-3 place-self-center">Thành tiền</div>
                         </Box>
                         <Box className="bg-white px-6 rounded-sm">
-                            <CartItemList items={cartData.items} onItemDelete={fetchCartData} />
+                            <CartItemsList items={cartData.items} onItemDelete={fetchCartData} />
                         </Box>
                     </Stack>
                 )}

@@ -5,6 +5,9 @@ export const paymentMethodMap = {
     "Bank transfer": {
         display: "Chuyển khoản ngân hàng",
     },
+    "QR Pay": {
+        display: 'Thanh toán qua mã QR của VNPay'
+    }
 }
 export const orderStatusMap = {
         "pending": {

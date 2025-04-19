@@ -33,22 +33,52 @@ export default function CheckoutForm() {
 
     const onSubmit = async (data: CheckoutFormValues) => {
         setIsSubmitting(true);
+        let orderId: string | undefined;
         try {
             const orderData = prepareOrderData(data, cartItems, totalPrice);
-            const result = await submitOrder(
+            const orderResult = await submitOrder(
                 orderData,
                 cartItems,
                 totalPrice,
                 user?.uid,
                 clearCart,
             );
-            if (result.success) {
+            if (!orderResult.success || !orderResult.orderId) {
+                showSnackbar(orderResult.error || 'Đặt hàng thất bại', 'error');
+            }
+            if (data.paymentMethod === 'QR Pay') {
+                const vnpayResponse = await fetch('/api/create-vnpay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: orderResult.orderId,
+                        amount: totalPrice,
+                        return_url: `${window.location.origin}/payment/return?order_id=${orderId}`,
+                    }),
+                })
+                const vnpayData = await vnpayResponse.json();
+                if (vnpayData.code === '00') {
+                    window.location.href = vnpayData.data;
+                    return;
+                }
+                throw new Error('Thanh toán mã VNPay QR thất bại');
+            }
+            if (orderResult.success) {
                 showSnackbar('Đặt hàng thành công', 'success');
-            } else {
-                showSnackbar(result.error || 'Đặt hàng thất bại', 'error');
             }
         } catch (error) {
             console.error('Error submitting order', error);
+            if (orderId) {
+                try {
+                    await fetch('/api/cancel-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({orderId})
+                    })
+                } catch (cancelError) {
+                    console.error('Failed to cancel order', cancelError);
+                }
+            }
             showSnackbar('Đã có lỗi xảy ra khi gửi đơn hàng', 'error');
         } finally {
             setIsSubmitting(false);
@@ -60,7 +90,7 @@ export default function CheckoutForm() {
         <Box margin={6} padding={6}>
             <Breadcrumb />
             <Grid container spacing={3}>
-                <Grid size={7}>
+                <Grid size={{md: 12, lg: 7}}>
                     <FormProvider {...checkoutForm}>
                         <Stack component={"form"} onSubmit={handleSubmit(onSubmit)} direction="column" spacing={2}>
                             <ShippingInfoBlock />
@@ -79,7 +109,7 @@ export default function CheckoutForm() {
                         </Stack>
                     </FormProvider>
                 </Grid>
-                <Grid size={5}>
+                <Grid size={{md: 12, lg: 5}}>
                     {memoizedCartSummary}
                 </Grid>
             </Grid>

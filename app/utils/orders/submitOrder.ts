@@ -9,12 +9,12 @@ export const submitOrder = async (
     totalPrice: number,
     userId: string | undefined,
     clearCart: () => Promise<boolean>,
-): Promise<{ success: boolean, error? : string}> => {
+): Promise<{success: boolean, orderId?: string, error?: string}> => {
     if (!userId) {
         return {success: false, error: 'User not authenticated'};
     }
     try {
-
+        let createdOrderID: string | undefined;
         //Kiểm tra liệu người dùng có trên hệ thống
         if (!userId) {
             return {success: false, error: 'User not authenticated'};
@@ -37,8 +37,8 @@ export const submitOrder = async (
                 createdAt: new Date(),
                 updatedAt: new Date(),
             }
-            const orderCollection = collection(db, "orders");
-            await addDoc(orderCollection, orderData);
+            const orderRef = await addDoc(collection(db, 'orders'), orderData);
+            createdOrderID = orderRef.id;
 
             //2: Thêm và cập nhật trường để ghi lại số lượng sản phẩm được bán
             const bookUpdates = cartItems.map(async (item) => {
@@ -57,7 +57,7 @@ export const submitOrder = async (
                 return {success: false, error: 'Failed to delete cart but order still submitted'};
             }
         });
-        return {success: true}
+        return {success: true, orderId: createdOrderID}
     } catch (error) {
         console.error("Error submitting order: ", error);
         return {success: false, error: error instanceof Error ? error.message : "Failed to submit order"};

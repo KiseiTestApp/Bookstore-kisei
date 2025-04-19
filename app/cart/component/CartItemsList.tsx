@@ -19,7 +19,7 @@ interface Props {
     onItemDelete: () => void;
 }
 
-const CartItemList = ({items, onItemDelete = () => {}} : Props) => {
+const CartItemsList = ({items, onItemDelete = () => {}} : Props) => {
 
     const {user} = useAuth();
 
@@ -50,17 +50,25 @@ const CartItemList = ({items, onItemDelete = () => {}} : Props) => {
                         />
                         <Box className="flex flex-col justify-between">
                             <Typography variant="body2" color="textPrimary" style={{ wordWrap: 'break-word'}}>{item.title}</Typography>
-                            <Box className="flex flex-row gap-3 items-center">
-                                <Typography variant="body1" color="textPrimary" sx={{ fontSize: '18px'}}>{item.discounted.toLocaleString('vi-VN')} VNĐ</Typography>
-                                <Typography variant="subtitle2" color="textSecondary" sx={{ textDecoration: 'line-through'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
-                            </Box>
+                            {item.discounted > 0 ? (
+                                <Box className="flex flex-row gap-3 items-center">
+                                    <Typography variant="body1" color="textPrimary" sx={{ fontSize: '18px'}}>{item.discounted.toLocaleString('vi-VN')} VNĐ</Typography>
+                                    <Typography variant="subtitle2" color="textSecondary" sx={{ textDecoration: 'line-through'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
+                                </Box>
+                            ) : (
+                                <Box className="flex flex-row gap-3 items-center">
+                                    <Typography variant="body1" color="textPrimary" sx={{ fontSize: '18px'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
+                                </Box>
+                            )}
                         </Box>
                     </Box>
                     <Box className="col-span-3 place-self-center">
                         <SmallQuantitySelector bookId={item.bookId} onQuantityChange={handleQuantityChanged} />
                     </Box>
                     <Box className="col-span-3 place-self-center">
-                        <Typography variant="h6" color={theme.palette.primary.dark}>{Math.round(item.discounted * item.quantity).toLocaleString('vi-VN')} VNĐ</Typography>
+                        <Typography variant="h6" color={theme.palette.primary.dark}>
+                            {Math.round((item.discounted || item.price) * item.quantity).toLocaleString('vi-VN')} VNĐ
+                        </Typography>
                     </Box>
                     <Box className="col-span-1 place-self-center">
                         <Button onClick={() => handleDeleteItem(item.bookId)} variant="text" color="error" className="items-center">Xóa</Button>
@@ -71,4 +79,4 @@ const CartItemList = ({items, onItemDelete = () => {}} : Props) => {
     )
 }
 
-export default CartItemList;
+export default CartItemsList;
