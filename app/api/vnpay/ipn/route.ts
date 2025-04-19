@@ -5,12 +5,16 @@ import {getVNPayResponseMessage} from "@/app/utils/vnpayResponseCode";
 
 export async function GET(request: Request) {
     try {
+        console.log("Raw URL:", request.url);
+        const url = new URL(request.url);
+        console.log("Search params:", url.searchParams.toString());
         const db = getFirestore();
         const {searchParams} = new URL(request.url);
         const vnp_Params: Record<string, string> = {};
         searchParams.forEach((value, key) => {
             vnp_Params[key] = value;
         })
+
         console.log("All Params:", vnp_Params);
         // 1. Tạo checksum để đối chiếu và xác thực khóa
         const secureHash = vnp_Params.vnp_SecureHash;
