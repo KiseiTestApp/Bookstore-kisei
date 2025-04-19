@@ -1,12 +1,12 @@
 'use client'
 
-import {useEffect, useState} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {useSearchParams, useRouter} from "next/navigation";
 import {Box, Typography, Button, CircularProgress} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 
-export default function PaymentResult() {
+function PaymentResultContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
@@ -63,5 +63,17 @@ export default function PaymentResult() {
                 </>
             )}
         </Box>
+    )
+}
+
+export default function PaymentResult() {
+    return (
+        <Suspense fallback={
+            <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
+                <CircularProgress size={60} />
+            </Box>
+        }>
+            <PaymentResultContent />
+        </Suspense>
     )
 }
