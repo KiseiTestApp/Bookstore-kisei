@@ -13,7 +13,7 @@ function PaymentResultContent() {
     const [orderId, setOrderId] = useState<string | null>(null);
     useEffect(() => {
         const vnp_ResponseCode = searchParams.get('vnp_ResponseCode');
-        const orderIdParam = searchParams.get('orderId');
+        const orderIdParam = searchParams.get('vnp_TxnRef');
         setOrderId(orderIdParam);
         if (vnp_ResponseCode === '00') {
             setStatus('success');
