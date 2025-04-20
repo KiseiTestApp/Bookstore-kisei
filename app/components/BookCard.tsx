@@ -8,31 +8,27 @@ import Visibility from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import {Book} from '@/app/types/book';
+import theme from "@/app/theme";
+import {grey, teal} from "@mui/material/colors";
 
 interface BookCardProps {
     book: Book;
-    onAddtoCart: (bookId: string, quantity: number) => void;
+    onAddToCart: (bookId: string, quantity: number) => void;
 }
 
-const BookCard = ({book, onAddtoCart}: BookCardProps) => {
+const BookCard = ({book, onAddToCart}: BookCardProps) => {
     const [isAdding, setIsAdding] = React.useState(false);
-    const [isNavigating, setIsNavigating] = React.useState(false);
-    const handleAddtoCartClick = async (e: React.MouseEvent) => {
+    const handleAddToCartClick = async (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsAdding(true);
         try {
-            onAddtoCart(book.id, 1);
+            onAddToCart(book.id, 1);
         } finally {
             setIsAdding(false);
         }
     }
-    const handleViewDetailClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsNavigating(true);
-        window.open(`/book-details/${book.id}`, "_blank");
-        setTimeout(() => setIsNavigating(false), 500);
-    }
     const [isHovered, setHovered] = React.useState(false);
+    const discountPercent = Math.round((1 - book.discounted/book.price) * 100)
     return (
         <Link href={`/book-details/${book.id}`} underline='none'>
             <Box className="px-4 pb-6 border border-neutral-100 rounded-xs hover:shadow-md cursor-pointer"
@@ -48,7 +44,7 @@ const BookCard = ({book, onAddtoCart}: BookCardProps) => {
                     <div className={`absolute inset-0 flex items-center justify-center gap-4 
                     transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}>
                         <Tooltip title="Thêm vào giỏ">
-                            <IconButton color="neutral" onClick={handleAddtoCartClick}
+                            <IconButton color="neutral" onClick={handleAddToCartClick}
                                         className="transform transition-transform hover:scale-105"
                                         sx={{
                                             backgroundColor: '#f0f0f0',
@@ -67,9 +63,8 @@ const BookCard = ({book, onAddtoCart}: BookCardProps) => {
                                                 backgroundColor: '#f0f0f0',
                                             }
                                         }}
-                                        onClick={handleViewDetailClick}
                             >
-                                {isNavigating ? <CircularProgress size={24}/> : <Visibility/>}
+                                <Visibility/>
                             </IconButton>
                         </Tooltip>
                     </div>
@@ -83,9 +78,9 @@ const BookCard = ({book, onAddtoCart}: BookCardProps) => {
                             <Typography
                                 variant="body1"
                                 className="sm:line-clamp-none md:line-clamp-1"
-                                color='textPrimary'
+                                color={theme.palette.primary.dark}
                                 sx={{
-                                    fontWeight: 'regular',
+                                    fontWeight: 'medium',
                                 }}
                             >
                                 {book.title}
@@ -95,18 +90,18 @@ const BookCard = ({book, onAddtoCart}: BookCardProps) => {
                     <Box className="mt-3">
                         {book.discounted > 0 ? (
                             <>
-                                <Typography variant="h6" fontSize="1.2rem" color='textPrimary' fontWeight={500}>
+                                <Typography variant="h6" color='textPrimary' fontWeight={500} alignItems='center' display='flex' gap={2}>
                                     {book.discounted.toLocaleString('vi-VN')} VND
-                                    <span className="mx-3 p-1 rounded-sm bg-emerald-700 text-gray-50 text-sm">
-                                        {Math.round((book.price / book.discounted) * 100) - 100}%
-                                     </span>
+                                    <Typography variant='body1' color={grey[200]} bgcolor={teal[700]} padding={0.3} borderRadius='15%' >
+                                        -{discountPercent}%
+                                    </Typography>
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary" sx={{textDecoration: 'line-through'}}>
                                     {book.price.toLocaleString('vi-VN')} VND
                                 </Typography>
                             </>
                         ) : (
-                            <Typography variant="h6" fontSize="1.2rem" color='textPrimary' fontWeight={500}>
+                            <Typography variant="h6" color='textPrimary' fontWeight={500}>
                                 {book.price.toLocaleString('vi-VN')} VND
                             </Typography>
                         )}

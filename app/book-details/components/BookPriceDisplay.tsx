@@ -17,7 +17,7 @@ export default function BookPriceDisplay({title, normalPrice, discountedPrice}: 
                 <>
                     <Typography variant="h4" fontWeight={500} alignItems='center' display='flex' gap={2}>
                         {discountedPrice.toLocaleString('vi-VN')} VND
-                        <Typography variant='body1' color={grey[200]} bgcolor={teal[700]} padding={0.5} borderRadius='15%' >
+                        <Typography variant='body1' color={grey[200]} bgcolor={teal[700]} padding={0.3} borderRadius='15%' >
                             -{discountPercent}%
                         </Typography>
                     </Typography>

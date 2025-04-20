@@ -56,7 +56,7 @@ export default function GenreCollection() {
             <Grid container spacing={2} marginTop={2} alignItems="flex-start" sx={{ width: "65rem" }}>
                 {books.map((book) => (
                     <Grid key={book.id} size={{ sm: 12, md: 6, xl: 3}}>
-                        <BookCard book={book} onAddtoCart={handleAddtoCart} />
+                        <BookCard book={book} onAddToCart={handleAddtoCart} />
                     </Grid>
                 ))}
             </Grid>

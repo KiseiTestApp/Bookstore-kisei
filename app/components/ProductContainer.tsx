@@ -60,7 +60,7 @@ const ProductContainer = ({ books } : BookProps) => {
                             className="items-start"
                         >
                             
-                            <BookCard book={book} onAddtoCart={handleAddtoCart} />
+                            <BookCard book={book} onAddToCart={handleAddtoCart} />
                         </Grid>
                     ))}
                 </Grid>
