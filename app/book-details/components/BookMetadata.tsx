@@ -14,7 +14,7 @@ export default function BookMetadata({ book }: { book: Book }) {
     ]
     return (
         <Box bgcolor='white' borderRadius="md" padding={2}>
-            <Typography variant="body1" color="textPrimary" fontWeight={600}>Thông tin chi tiết</Typography>
+            <Typography variant="body1" color="textPrimary" fontWeight={520}>Thông tin chi tiết</Typography>
             <Box className="flex flex-col mt-4 gap-2">
                 {details.map(({label, value}, index) => (
                     <React.Fragment key={index}>

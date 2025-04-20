@@ -56,7 +56,7 @@ export default function BookDetails({book}: { book: Book }) {
                                           discountedPrice={discountedPrice}/>
                         <BookMetadata book={book}/>
                         <Box className="bg-white" padding={2} borderRadius='md'>
-                            <Typography variant="body1" color="textPrimary" fontWeight={600}>Mô tả sản phẩm</Typography>
+                            <Typography variant="body1" color="textPrimary" fontWeight={520}>Mô tả sản phẩm</Typography>
                             <Typography variant="body2" className="pt-4"
                                         fontSize={"medium"}>{book.description}</Typography>
                         </Box>

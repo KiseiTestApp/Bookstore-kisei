@@ -29,8 +29,8 @@ export default function PurchaseBox({book, quantity, onQuantityChangeAction, onA
         <Box padding={1} borderRadius="md" bgcolor='white' sx={{position: 'sticky', top: '0', height: 'fit-content'}}>
             <QuantitySelector quantity={quantity} onQuantityChanged={onQuantityChangeAction}/>
             <Box className="mt-3">
-                <Typography variant="h6" fontWeight={400}>Tạm tính</Typography>
-                <Typography variant="h5" fontWeight={600}>
+                <Typography variant="h6" fontWeight={380}>Tạm tính</Typography>
+                <Typography variant="h5" fontWeight={450}>
                     {Math.round(quantity * actualPrice).toLocaleString('vi-VN')}đ
                 </Typography>
             </Box>
