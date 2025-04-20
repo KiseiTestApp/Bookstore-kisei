@@ -51,6 +51,7 @@ export default function CheckoutForm() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         order_id: orderResult.orderId,
+                        order_desc: `Thanh toan cho so dien thoai ${orderData.customer.customer_phone}. So tien ${totalPrice}`,
                         amount: totalPrice,
                         return_url: `${window.location.origin}/payment/return?order_id=${orderResult.orderId}`,
                     }),
