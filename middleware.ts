@@ -28,14 +28,14 @@ export async function middleware(req: NextRequest) {
             if (role !== 'admin') {
                 const url = req.nextUrl.clone();
                 url.pathname = error === 'Admin user unauthorized' ? '/admin/sign-in' : '/no-access';
-                return NextResponse.json(url);
+                return NextResponse.redirect(url);
             }
         }
         else if (pathname.startsWith('/customer')) {
             if (role !== 'user') {
                 const url = req.nextUrl.clone();
                 url.pathname = error === 'User not found' ? '/account/sign-in' : '/account/sign-up';
-                return NextResponse.json(url);
+                return NextResponse.redirect(url);
             }
         }
         const headers = new Headers(req.headers);
