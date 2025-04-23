@@ -52,7 +52,7 @@ export async function middleware(req: NextRequest) {
         if (pathname.startsWith('/admin')) {
             url.pathname = error.message.includes('Unauthorized') ? '/admin/sign-in' : '/no-access';
         } else {
-            url.pathname = error.message.includes('Unauthorized') ? '/sign-in' : '/no-access';
+            url.pathname = error.message.includes('No user document found') ? '/account/sign-in' : '/accpunt/sign-up';
         }
         return NextResponse.redirect(url);
     }

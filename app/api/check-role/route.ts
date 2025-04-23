@@ -23,7 +23,7 @@ export async function GET(req: Request) {
             .get();
         if (!userDoc.exists) {
             return NextResponse.json(
-                {error: "No user document found."},
+                {error: "User not found."},
                 {status: 403}
             )
         }
