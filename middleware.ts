@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
         if (pathname.startsWith('/admin')) {
             if (role !== 'admin') {
                 const url = req.nextUrl.clone();
-                url.pathname = error === 'Admin user unauthorized' ? '/admin/sing-in' : '/no-access';
+                url.pathname = error === 'Admin user unauthorized' ? '/admin/sign-in' : '/no-access';
                 return NextResponse.json(url);
             }
         }
