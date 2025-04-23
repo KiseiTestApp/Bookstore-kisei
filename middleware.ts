@@ -20,10 +20,13 @@ export async function middleware(req: NextRequest) {
             }
         });
         const responseData = await response.json();
+        console.log('Full response:', responseData);
         if (!response.ok) {
             throw new Error(responseData.error || 'Authorization failed.');
         }
         const { role, error } = responseData;
+        console.log('Role received:', role);
+        console.log('Error received:', error);
         if (pathname.startsWith('/admin')) {
             if (role !== 'admin') {
                 const url = req.nextUrl.clone();
@@ -47,12 +50,16 @@ export async function middleware(req: NextRequest) {
             }
         });
     } catch (error: any) {
-        console.log('Admin middleware error', error);
+        console.error('Middleware error:', {
+            error: error?.message || 'Unknown error',
+            stack: error?.stack,
+            pathname
+        });
         const url = req.nextUrl.clone();
         if (pathname.startsWith('/admin')) {
-            url.pathname = error.message.includes('Unauthorized') ? '/admin/sign-in' : '/no-access';
+            url.pathname = '/admin/sign-in';
         } else {
-            url.pathname = error.message.includes('No user document found') ? '/account/sign-in' : '/accpunt/sign-up';
+            url.pathname = '/account/sign-in';
         }
         return NextResponse.redirect(url);
     }

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getFirestore } from "@/lib/firebase/firebase-admin";
-import admin from "firebase-admin";
+import {getAuth, getFirestore} from "@/lib/firebase/firebase-admin";
 import {cookies} from "next/headers";
 
 export async function GET(req: Request) {
@@ -14,7 +13,7 @@ export async function GET(req: Request) {
                 {status: 401}
             )
         }
-        const auth = admin.auth();
+        const auth = getAuth();
         const db = getFirestore();
         const decodedToken = await auth.verifyIdToken(token);
         const userDoc = await db
@@ -45,17 +44,19 @@ export async function GET(req: Request) {
         })
     } catch (error) {
         console.log('API/check-role error: ', error);
-        if (
-            error instanceof Error &&
-            error.message.includes('auth/id-token-expired')
-        ) {
-            return NextResponse.json(
-                {error: 'Token expired. Please try again later'},
-                {status: 401}
-            )
+        let errorMessage  = 'Authorization Failed.';
+        if (error instanceof Error) {
+            if (error.message.includes('auth/id-token-expired')) {
+                errorMessage = 'Token expired.';
+            } else if (error.message.includes('auth/id-token-revoked')) {
+                errorMessage = 'Token revoked.';
+            }
         }
         return NextResponse.json(
-            {error: 'Authorization failed'},
+            {
+                error: errorMessage,
+                details: error instanceof Error ? error.message : undefined,
+            },
             {status: 401},
         )
     }
