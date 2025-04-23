@@ -2,7 +2,13 @@ import {NextRequest, NextResponse} from "next/server";
 
 export async function middleware(req: NextRequest) {
     const {pathname, origin} = req.nextUrl;
-    const publicPaths = ['/admin/sign-in', '/admin/api/admin/set-token', '/admin/api/set-token'];
+    const publicPaths =
+        [
+            '/admin/sign-in',
+            '/admin/api/admin/set-token',
+            '/admin/api/set-token',
+            '/account/sign-in',
+        ];
     if (publicPaths.some(path => pathname.startsWith(path))) {
         return NextResponse.next();
     }
@@ -18,10 +24,19 @@ export async function middleware(req: NextRequest) {
             throw new Error(responseData.error || 'Authorization failed.');
         }
         const { role, error } = responseData;
-        if (role !== 'admin') {
-            const url = req.nextUrl.clone();
-            url.pathname = error === 'Unauthorized' ? '/admin/sign-in' : 'no-access';
-            return NextResponse.redirect(url);
+        if (pathname.startsWith('/admin')) {
+            if (role !== 'admin') {
+                const url = req.nextUrl.clone();
+                url.pathname = error === 'Admin user unauthorized' ? '/admin/sing-in' : '/no-access';
+                return NextResponse.json(url);
+            }
+        }
+        else if (pathname.startsWith('/customer')) {
+            if (role !== 'user') {
+                const url = req.nextUrl.clone();
+                url.pathname = error === 'User not found' ? '/account/sign-in' : '/account/sign-up';
+                return NextResponse.json(url);
+            }
         }
         const headers = new Headers(req.headers);
         headers.set('x-user-role', role);
@@ -34,11 +49,18 @@ export async function middleware(req: NextRequest) {
     } catch (error: any) {
         console.log('Admin middleware error', error);
         const url = req.nextUrl.clone();
-        url.pathname = error.message.includes('Unauthorized') ? '/admin/sign-in' : 'no-access';
+        if (pathname.startsWith('/admin')) {
+            url.pathname = error.message.includes('Unauthorized') ? '/admin/sign-in' : '/no-access';
+        } else {
+            url.pathname = error.message.includes('Unauthorized') ? '/sign-in' : '/no-access';
+        }
         return NextResponse.redirect(url);
     }
 }
 
 export const config = {
-    matcher: ['/admin/:path*'],
+    matcher: [
+        '/admin/:path*',
+        '/customer/:path*',
+    ],
 }

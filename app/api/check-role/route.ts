@@ -29,9 +29,9 @@ export async function GET(req: Request) {
         }
         const userData = userDoc.data();
         console.log(userData?.role);
-        if (userData?.role !== "admin") {
+        if (userData?.role !== "admin" && userData?.role !== "user") {
             return NextResponse.json(
-                {error: "Insufficient role found.", role: 'user'},
+                {error: "Insufficient role found.", role: userData?.role || 'guest'},
                 {status: 403}
             )
         }
