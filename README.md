@@ -4,8 +4,10 @@
 
 Webiste **Read&Chill** cung cấp các tính năng như sau:
 - **Tìm kiếm sách**: tìm kiếm theo tên sách, tác giả
+- **Đánh giá sách**: đánh giá sách và để lại bình luận cho sách
 - **Tài khoản**: tạo tài khoản, đăng nhập, và quản lý thông tin cá nhân trên trang web
 - **Giỏ hàng**: Thêm sách/xóa sách khỏi giỏ và kiểm tra checkout
+- **Thanh toán**: hỗ trợ thanh toán qua VNPay Payment Gateaway
 - **Admin Dashboard**: quản lý sách, đơn hàng, và khách hàng trên trang web cho admin
 
 ## 2 🛠️ Các công nghệ được sử dụng
