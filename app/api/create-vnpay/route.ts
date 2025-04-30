@@ -28,7 +28,6 @@ export async function POST(request: Request) {
             vnp_OrderType: '150000',
             vnp_ReturnUrl: vnp_ReturnUrl,
             vnp_TxnRef: order_id,
-
         }
         if (bank_code) {
             vnp_Params.vnp_BankCode = bank_code;

@@ -1,10 +1,54 @@
 "use client"
 
 import { Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import {Province, Ward, District} from "@/app/types/address";
+import React from 'react';
 import Grid from "@mui/material/Grid2";
 import {useFormContext} from 'react-hook-form';
+import {FixedSizeList} from "react-window";
+import {useAddressData} from "@/app/hooks/useAddressData";
+
+
+// eslint-disable-next-line react/display-name
+const VirtualizedList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLElement>>(
+    (props, ref) => {
+        const { children, ...other } = props;
+        const items = React.Children.toArray(children);
+        const itemCount = items.length;
+        const itemSize = 48;
+        const listHeight = Math.min(itemCount * itemSize, 300);
+
+        return (
+            <div ref={ref}>
+                <FixedSizeList
+                    height={listHeight}
+                    width="100%"
+                    itemSize={itemSize}
+                    itemCount={itemCount}
+                    overscanCount={3}
+                    style={{ padding: 2}}
+                >
+                    {({ index, style }) => (
+                        <div style={style}>
+                            {items[index]}
+                        </div>
+                    )}
+                </FixedSizeList>
+            </div>
+        );
+    }
+);
+
+const MenuProps = {
+    PaperProps: {
+        style: {
+            width: 'auto',
+        },
+    },
+    MenuListProps: {
+        component: VirtualizedList,
+        style: {padding: 2}
+    },
+};
 
 interface AddressSelectorProps {
     name: string;
@@ -12,84 +56,15 @@ interface AddressSelectorProps {
 
 export default function AddressSelector({ name } : AddressSelectorProps) {
     const {watch, setValue, getValues} = useFormContext();
-    const [provinces, setProvinces] = useState<Province[]>([]);
-    const [districts, setDistricts] = useState<District[]>([]);
-    const [wards, setWards] = useState<Ward[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
+    const {
+        provinces,
+        districts,
+        wards,
+        isLoading,
+        handleFieldChange,
+    } = useAddressData(name, setValue, getValues);
     const formValues = watch(name);
     const { province, district, ward, street } = formValues || {};
-
-    useEffect(() => {
-        const loadData = async () => {
-            setIsLoading(true);
-            try {
-                const addressData = await import ('@/public/vietnam_addresses.json');
-                setProvinces(addressData.default as Province[]);
-            } catch (error) {
-                console.error("Error loading data", error);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        void loadData();
-    }, []);
-
-    useEffect(() => {
-        if (province) {
-            const provinceObj = provinces.find(p => p.Code == province);
-            setDistricts(provinceObj?.District || []);
-            setValue(`${name}.district`, '');
-            setValue(`${name}.ward`, '');
-        }
-    }, [province, provinces, name, setValue]);
-
-    useEffect(() => {
-        if (district) {
-            const districtObj = districts.find(d => d.Code === district);
-            setWards(districtObj?.Ward || []);
-            setValue(`${name}.ward`, '');
-        }
-    }, [district, districts, name, setValue]);
-
-    const handleFieldChange = (field: string, value: string) => {
-        const currentValues = getValues(name);
-        const newValues = {
-            ...currentValues,
-            [field]: value
-        }
-        setValue(`${name}.${field}`, value);
-
-        // Tìm thông tin địa chỉ dựa theo Code tương ứng
-        const provinceObj = provinces.find(p => p.Code === newValues.province);
-        const districtObj = provinceObj?.District?.find(d => d.Code === newValues.district);
-        const wardObj = districtObj?.Ward?.find(w => w.Code === newValues.ward);
-
-        // Lưu tên địa chỉ
-        if (field === 'province') {
-            setValue(`${name}.district`, newValues.province);
-            setValue(`${name}.provinceName`, provinceObj?.FullName || '');
-        }
-        if (field === 'district') {
-            setValue(`${name}.district`, newValues.district);
-            setValue(`${name}.districtName`, districtObj?.FullName || '');
-        }
-        if (field === 'ward') {
-            setValue(`${name}.ward`, newValues.ward);
-            setValue(`${name}.wardName`, wardObj?.FullName || '');
-        }
-
-        // Cập nhật địa chỉ đầy đủ
-        const addressParts = [
-                newValues.street,
-                wardObj?.FullName,
-                districtObj?.FullName,
-                provinceObj?.FullName
-        ].filter(part => part && part.trim() !== ' ');
-        setValue(`${name}.fullAddress`, addressParts.join(', '));
-    };
-
-
     return (
         <Grid container spacing={2}>
             {isLoading ? (
@@ -104,18 +79,14 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                             onChange={(e) => handleFieldChange('street', e.target.value)}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={{xs: 12, lg: 4}}>
                         <FormControl fullWidth>
                             <InputLabel>Tỉnh/Thành phố</InputLabel>
                             <Select
                                 value={province || ''}
                                 onChange={(e) => handleFieldChange('province', e.target.value)}
                                 label="Tỉnh/Thành phố"
-                                MenuProps={{
-                                    style: {
-                                        maxHeight: 300,
-                                    },
-                                }}
+                                MenuProps={MenuProps}
                             >
                                 {provinces.map((province) => (
                                     <MenuItem key={province.Code} value={province.Code}>
@@ -125,7 +96,7 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={{xs: 12, lg: 4}}>
                         <FormControl fullWidth>
                             <InputLabel>Quận/Huyện</InputLabel>
                             <Select
@@ -133,11 +104,7 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                                 onChange={(e) => handleFieldChange('district', e.target.value)}
                                 label="Quận/Huyện"
                                 disabled={!province}
-                                MenuProps={{
-                                    style: {
-                                        maxHeight: 300,
-                                    }
-                                }}
+                                MenuProps={MenuProps}
                             >
                                 {districts.map((district) => (
                                     <MenuItem key={district.Code} value={district.Code}>
@@ -147,18 +114,14 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={{xs: 12, lg: 4}}>
                         <FormControl fullWidth>
                             <InputLabel>Phường/Xã</InputLabel>
                             <Select
                                 value={ward || ''}
                                 onChange={(e) => handleFieldChange('ward', e.target.value)}
                                 label="Phường/Xã"
-                                MenuProps={{
-                                    style: {
-                                        maxHeight: 300,
-                                    }
-                                }}
+                                MenuProps={MenuProps}
                             >
                                 {wards.map((ward) => (
                                     <MenuItem key={ward.Code} value={ward.Code}>

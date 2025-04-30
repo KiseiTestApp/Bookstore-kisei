@@ -1,6 +1,6 @@
 // Card địa chỉ
 import {Box, Button, Typography} from "@mui/material"
-import {AddressFormValues} from "@/app/customer/address/components/AddAddressForm";
+import {AddressFormValues} from "@/app/customer/address/components/AddressForm";
 import theme from "@/app/theme";
 import {useDialog} from "@/app/context/DialogContext";
 
@@ -41,9 +41,14 @@ export default function AddressCard({address, isDefault, onDelete}: AddressCardD
                         </Typography>
                     )}
                 </Box>
-                <Button color="error" onClick={handleDeleteClick} size="small" disabled={isDefault}>
-                    Xóa
-                </Button>
+                <Box>
+                    <Button color="error" onClick={handleDeleteClick} size="small" disabled={isDefault}>
+                        Xóa
+                    </Button>
+                    <Button color='primary' href={`/customer/address/edit/${address.id}`}>
+                        Cập nhật
+                    </Button>
+                </Box>
             </Box>
             <Box marginTop={1}>
                 <Typography variant="body2" color="textSecondary">

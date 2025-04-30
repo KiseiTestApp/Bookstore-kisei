@@ -1,6 +1,6 @@
 import {db} from '@/lib/firebase/config';
 import {collection, getDocs, deleteDoc, doc} from "@firebase/firestore";
-import {AddressFormValues} from "@/app/customer/address/components/AddAddressForm";
+import {AddressFormValues} from "@/app/customer/address/components/AddressForm";
 
 export const fetchAddresses = async (userId: string) => {
     console.log("Fetching addresses for user:", userId);

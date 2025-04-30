@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 import {useAuth} from "@/app/context/AuthProviderContext";
 import {useEffect, useState} from "react";
 import {useSnackbar} from "@/app/context/SnackbarContext";
-import {AddressFormValues} from "@/app/customer/address/components/AddAddressForm";
+import {AddressFormValues} from "@/app/customer/address/components/AddressForm";
 import AddressCard from "@/app/customer/address/components/AddressCard";
 import {fetchAddresses, deleteAddress} from "@/app/utils/account/address/addressHandlers";
 
