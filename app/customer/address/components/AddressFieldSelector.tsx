@@ -4,19 +4,22 @@ import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@m
 import {TextField} from "@mui/material";
 import {useAddressData} from "@/app/hooks/useAddressData";
 import {Controller} from "react-hook-form";
+import {AddressFormValues} from "@/app/customer/address/components/AddressForm";
 
 interface AddressFieldsProps {
     control: any;
     setValue: any;
     getValues: any;
     errors: any,
+    initialData?: AddressFormValues
 }
 
-export const AddressFieldsSelector = ({ control, setValue, getValues, errors }: AddressFieldsProps) => {
+export const AddressFieldsSelector = ({ control, setValue, getValues, errors, initialData }: AddressFieldsProps) => {
     const { provinces, districts, wards, isLoading, handleFieldChange } = useAddressData(
         "",
         setValue,
-        getValues
+        getValues,
+        initialData
     );
 
     const handleSelectChange = (field: string) => (e: SelectChangeEvent) => {
@@ -38,6 +41,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors }: 
                             label="Tỉnh/Thành phố"
                             onChange={handleSelectChange("province")}
                             value={field.value}
+                            renderValue={(value) => {
+                                const selectedProvince = provinces.find(p => p.Code === value);
+                                return selectedProvince ? selectedProvince.FullName : value;
+                            }}
                         >
                             {provinces.map((province) => (
                                 <MenuItem key={province.Code} value={province.Code}>
@@ -61,6 +68,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors }: 
                             label="Quận/Huyện"
                             onChange={handleSelectChange("district")}
                             value={field.value}
+                            renderValue={(value) => {
+                                const selectedDistrict = districts.find(d => d.Code === value);
+                                return selectedDistrict ? selectedDistrict.FullName : value;
+                            }}
                         >
                             {districts.map((district) => (
                                 <MenuItem key={district.Code} value={district.Code}>
@@ -84,6 +95,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors }: 
                             label="Phường/Xã"
                             onChange={handleSelectChange("ward")}
                             value={field.value}
+                            renderValue={(value) => {
+                                const selectedWard = wards.find(w => w.Code === value);
+                                return selectedWard ? selectedWard.FullName : value;
+                            }}
                         >
                             {wards.map((ward) => (
                                 <MenuItem key={ward.Code} value={ward.Code}>
@@ -106,6 +121,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors }: 
                         fullWidth
                         error={!!errors.street}
                         helperText={errors.street?.message}
+                        onChange={(e) => {
+                            field.onChange(e);
+                            handleFieldChange('street', e.target.value)
+                        }}
                     />
                 )}
             />

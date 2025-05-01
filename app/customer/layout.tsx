@@ -1,16 +1,16 @@
 import Sidebar from '@/app/customer/components/Sidebar';
-import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid2';
 import Paper from '@mui/material/Paper';
 
 export default function CustomerLayout({children} : {children: React.ReactNode}) {
     return (
-        <Box className="flex min-h-screen" alignItems="flex-start">
-            <Paper sx={{ marginY: 5, marginX: 4, padding: 2}}>
+        <Grid container display='flex' alignItems="flex-start" justifyContent='center' marginTop={3} marginX={4} spacing={2}>
+            <Grid component={Paper} size={{xs: 12, md: 4, lg: 2}} padding={2}>
                 <Sidebar />
-            </Paper>
-            <Paper sx={{ marginY: 5, padding: 3, width: '70%' }}>
+            </Grid>
+            <Grid component={Paper} size={{xs: 12, md: 8, lg: 10}} padding={2}>
                 {children}
-            </Paper>
-        </Box>
+            </Grid>
+        </Grid>
     )
 }

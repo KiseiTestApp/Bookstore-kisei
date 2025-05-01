@@ -42,7 +42,7 @@ export default function AddressCard({address, isDefault, onDelete}: AddressCardD
                     )}
                 </Box>
                 <Box>
-                    <Button color="error" onClick={handleDeleteClick} size="small" disabled={isDefault}>
+                    <Button color="error" onClick={handleDeleteClick} size="small">
                         Xóa
                     </Button>
                     <Button color='primary' href={`/customer/address/edit/${address.id}`}>

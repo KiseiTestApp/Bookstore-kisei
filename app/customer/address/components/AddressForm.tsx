@@ -136,6 +136,7 @@ export default function AddressForm({initialData, isEdit = false}: AddAddressFor
                 setValue={setValue}
                 getValues={getValues}
                 errors={errors}
+                initialData={initialData}
             />
 
 

@@ -57,7 +57,7 @@ export const DialogProvider = ({children} : {children: React.ReactNode}) => {
                         <Button onClick={dialogOptions?.onConfirm ? handleConfirm : handleClose}
                                 color={dialogOptions?.onConfirm ? 'error' : 'primary'}
                         >
-                            {dialogOptions?.confirmText || (dialogOptions?.onConfirm) ? 'Đóng' : 'Xác nhận'}
+                            {dialogOptions?.confirmText || (dialogOptions?.onConfirm ? 'Đóng' : 'Xác nhận')}
                         </Button>
                     )}
                 </DialogActions>
