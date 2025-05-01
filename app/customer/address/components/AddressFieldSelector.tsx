@@ -3,14 +3,15 @@
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import {TextField} from "@mui/material";
 import {useAddressData} from "@/app/hooks/useAddressData";
-import {Controller} from "react-hook-form";
+import {Control, Controller, UseFormSetValue, UseFormGetValues, FieldErrors} from "react-hook-form";
 import {AddressFormValues} from "@/app/customer/address/components/AddressForm";
+import { useEffect } from "react";
 
 interface AddressFieldsProps {
-    control: any;
-    setValue: any;
-    getValues: any;
-    errors: any,
+    control: Control<AddressFormValues>;
+    setValue: UseFormSetValue<AddressFormValues>;
+    getValues: UseFormGetValues<AddressFormValues>;
+    errors: FieldErrors<AddressFormValues>;
     initialData?: AddressFormValues
 }
 
@@ -22,10 +23,23 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors, in
         initialData
     );
 
-    const handleSelectChange = (field: string) => (e: SelectChangeEvent) => {
+    const handleSelectChange = (field: 'province' | 'district' | 'ward') => (e: SelectChangeEvent) => {
         setValue(field, e.target.value, { shouldValidate: true });
         handleFieldChange(field, e.target.value);
     };
+
+
+    useEffect(() => {
+        if (initialData && initialData.province && initialData.district && initialData.ward) {
+            handleFieldChange("province", initialData.province);
+            setTimeout(() => {
+                handleFieldChange("district", initialData.district);
+                setTimeout(() => {
+                    handleFieldChange("ward", initialData.ward);
+                }, 100);
+            }, 100);
+        }
+    }, [initialData, provinces.length]);
 
     return (
         <>
@@ -40,10 +54,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors, in
                             {...field}
                             label="Tỉnh/Thành phố"
                             onChange={handleSelectChange("province")}
-                            value={field.value}
+                            value={field.value || ""}
                             renderValue={(value) => {
                                 const selectedProvince = provinces.find(p => p.Code === value);
-                                return selectedProvince ? selectedProvince.FullName : value;
+                                return selectedProvince ? selectedProvince.FullName : "";
                             }}
                         >
                             {provinces.map((province) => (
@@ -67,10 +81,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors, in
                             {...field}
                             label="Quận/Huyện"
                             onChange={handleSelectChange("district")}
-                            value={field.value}
+                            value={field.value || ""}
                             renderValue={(value) => {
                                 const selectedDistrict = districts.find(d => d.Code === value);
-                                return selectedDistrict ? selectedDistrict.FullName : value;
+                                return selectedDistrict ? selectedDistrict.FullName : "";
                             }}
                         >
                             {districts.map((district) => (
@@ -94,10 +108,10 @@ export const AddressFieldsSelector = ({ control, setValue, getValues, errors, in
                             {...field}
                             label="Phường/Xã"
                             onChange={handleSelectChange("ward")}
-                            value={field.value}
+                            value={field.value || ""}
                             renderValue={(value) => {
                                 const selectedWard = wards.find(w => w.Code === value);
-                                return selectedWard ? selectedWard.FullName : value;
+                                return selectedWard ? selectedWard.FullName : "";
                             }}
                         >
                             {wards.map((ward) => (

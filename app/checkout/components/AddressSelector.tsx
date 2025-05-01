@@ -24,7 +24,6 @@ const VirtualizedList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
                     width="100%"
                     itemSize={itemSize}
                     itemCount={itemCount}
-                    overscanCount={3}
                     style={{ padding: 2}}
                 >
                     {({ index, style }) => (
@@ -63,8 +62,14 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
         isLoading,
         handleFieldChange,
     } = useAddressData(name, setValue, getValues);
-    const formValues = watch(name);
+
+    const formValues = watch();
     const { province, district, ward, street } = formValues || {};
+
+    const selectedProvince = provinces.find(p => p.Code === province);
+    const selectedDistrict = districts.find(d => d.Code === district);
+    const selectedWard = wards.find(w => w.Code === ward);
+
     return (
         <Grid container spacing={2}>
             {isLoading ? (
@@ -87,6 +92,7 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                                 onChange={(e) => handleFieldChange('province', e.target.value)}
                                 label="Tỉnh/Thành phố"
                                 MenuProps={MenuProps}
+                                renderValue={() => selectedProvince ? selectedProvince.FullName : ''}
                             >
                                 {provinces.map((province) => (
                                     <MenuItem key={province.Code} value={province.Code}>
@@ -105,6 +111,7 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                                 label="Quận/Huyện"
                                 disabled={!province}
                                 MenuProps={MenuProps}
+                                renderValue={() => selectedDistrict ? selectedDistrict.FullName : ''}
                             >
                                 {districts.map((district) => (
                                     <MenuItem key={district.Code} value={district.Code}>
@@ -121,7 +128,9 @@ export default function AddressSelector({ name } : AddressSelectorProps) {
                                 value={ward || ''}
                                 onChange={(e) => handleFieldChange('ward', e.target.value)}
                                 label="Phường/Xã"
+                                disabled={!district}
                                 MenuProps={MenuProps}
+                                renderValue={() => selectedWard ? selectedWard.FullName : ''}
                             >
                                 {wards.map((ward) => (
                                     <MenuItem key={ward.Code} value={ward.Code}>

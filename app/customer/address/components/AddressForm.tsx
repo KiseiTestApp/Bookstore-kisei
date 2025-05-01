@@ -17,8 +17,11 @@ export interface AddressFormValues {
     receiver_phone: string;
     street: string;
     province: string;
+    provinceName?: string;
     district: string;
+    districtName?: string;
     ward: string;
+    wardName?: string;
     fullAddress: string;
     isDefault?: boolean;
 }
@@ -49,6 +52,9 @@ export default function AddressForm({initialData, isEdit = false}: AddAddressFor
             ward: '',
             fullAddress: '',
             isDefault: false,
+            provinceName: '',
+            districtName: '',
+            wardName: '',
         }
     })
 
