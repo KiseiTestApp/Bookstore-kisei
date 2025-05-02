@@ -1,7 +1,7 @@
 "use client"
 
 import {useAuth} from "@/app/context/AuthProviderContext";
-import { Button, Link, TextField, Typography} from "@mui/material";
+import {Button, IconButton, InputAdornment, Link, TextField, Typography} from "@mui/material";
 import {Box} from "@mui/system";
 import { useRouter } from "next/navigation";
 import {useSnackbar} from "@/app/context/SnackbarContext";
@@ -10,6 +10,9 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {signUpSchema} from "@/lib/validation/signUpSchema";
 import {z} from "zod";
+import React, {useState} from "react";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Visibility from "@mui/icons-material/Visibility";
 
 type SignUpFormData = z.infer<typeof signUpSchema>
 
@@ -34,6 +37,13 @@ export default function SignUp() {
             showSnackbar(error instanceof Error ? error.message : 'Đăng ký thất bại', 'error')
         }
     };
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    }
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    }
 
 
     return (
@@ -85,13 +95,22 @@ export default function SignUp() {
                     <TextField
                         {...register('password')}
                         name="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Mật khẩu"
                         variant="standard"
                         fullWidth
                         margin="normal"
                         error={!!errors.password}
                         helperText={errors.password?.message}
+                        slotProps={{
+                            input: {
+                                endAdornment: <InputAdornment position='end' sx={{ marginRight: 2 }}>
+                                    <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword} edge={'end'}>
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                        }}
                     />
                     <Box className="mt-6">
                         <Button

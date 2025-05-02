@@ -1,6 +1,8 @@
 "use client"
 
-import {Button, TextField, Typography} from "@mui/material";
+import {Button, TextField, Typography, InputAdornment, IconButton} from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {Link} from "@mui/material";
 import { useRouter } from "next/navigation";
 import {useAuth} from "@/app/context/AuthProviderContext";
@@ -9,6 +11,7 @@ import Image from "next/image";
 import {signInSchema, SignInFormData} from "@/lib/validation/signInSchema";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import React, {useState} from "react";
 
 
 export default function SignIn() {
@@ -33,6 +36,13 @@ export default function SignIn() {
         } catch (error) {
             console.log(error);
         }
+    }
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    }
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
     }
 
     return (
@@ -66,13 +76,22 @@ export default function SignIn() {
                     <TextField
                         label="Mật khẩu"
                         {...register('password')}
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         fullWidth
                         variant="standard"
                         margin="normal"
                         required
                         error={!!errors.password}
                         helperText={errors.password?.message}
+                        slotProps={{
+                            input: {
+                                endAdornment: <InputAdornment position='end' sx={{ marginRight: 2 }}>
+                                    <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword} edge={'end'}>
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                        }}
                     />
                     <div className="mt-4">
                         <Button
