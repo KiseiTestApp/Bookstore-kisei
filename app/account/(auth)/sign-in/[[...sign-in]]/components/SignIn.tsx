@@ -106,9 +106,6 @@ export default function SignIn() {
                     </div>
                 </form>
                 <div className="flex justify-between mt-6">
-                    <Link underline="hover" color="textPrimary">
-                        Quên mật khẩu?
-                    </Link>
                     <Link href="/account/sign-up" underline="hover">
                         Đăng ký mới
                     </Link>
