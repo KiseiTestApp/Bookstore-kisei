@@ -28,7 +28,6 @@ export default function CartContent() {
     const router = useRouter();
     const { user } = useAuth();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fetchCartData = async () => {
         if (!user) return;
