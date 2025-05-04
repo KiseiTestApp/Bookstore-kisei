@@ -58,12 +58,12 @@ const CartItemsList = ({items, onItemDelete = () => {}} : Props) => {
                             <Typography variant="body2" color="textPrimary" style={{ wordWrap: 'break-word'}}>{item.title}</Typography>
                             {item.discounted > 0 ? (
                                 <Box display="flex" flexDirection="row" gap={2} alignItems='center'>
-                                    <Typography variant="body1" color="textPrimary" sx={{ fontSize: '18px'}}>{item.discounted.toLocaleString('vi-VN')} VNĐ</Typography>
+                                    <Typography variant="body1" color={isMobile ? theme.palette.primary.dark : 'textPrimary'} sx={{ fontSize: '18px'}}>{item.discounted.toLocaleString('vi-VN')} VNĐ</Typography>
                                     <Typography variant="subtitle2" color="textSecondary" sx={{ textDecoration: 'line-through'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
                                 </Box>
                             ) : (
-                                <Box className="flex flex-row gap-3 items-center">
-                                    <Typography variant="body1" color="textPrimary" sx={{ fontSize: '18px'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
+                                <Box>
+                                    <Typography variant="body1" color={isMobile ? theme.palette.primary.dark : 'textPrimary'} sx={{ fontSize: '18px'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
                                 </Box>
                             )}
                         </Box>
