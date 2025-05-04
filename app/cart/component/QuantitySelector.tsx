@@ -1,11 +1,4 @@
 import React, {useEffect, useState} from 'react';
-
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-
 import {getItemQuantity, updateQuantity} from "@/app/utils/cart/fetchItemQuantity";
 import {useAuth} from "@/app/context/AuthProviderContext";
 
@@ -15,7 +8,7 @@ interface QuantityProps {
     onQuantityChange?: (quantity: number) => void;
 }
 
-const SmallQuantitySelector = ({ bookId, onQuantityChange} : QuantityProps) => {
+const QuantitySelector = ({ bookId, onQuantityChange} : QuantityProps) => {
     const {user} = useAuth();
     const [quantity, setQuantity] = useState<number>(1);
     useEffect(() => {
@@ -65,30 +58,48 @@ const SmallQuantitySelector = ({ bookId, onQuantityChange} : QuantityProps) => {
             handleUpdateQuantity(value);
         }
     };
+    const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+        const value = parseInt(event.target.value);
+        if (isNaN(value) || value < 1) {
+            handleUpdateQuantity(1);
+        } else if (value > 100) {
+            handleUpdateQuantity(100);
+        }
+    };
 
     if (!user) {
         return <></>;
     }
 
     return (
-        <Box className="flex items-center">
-            <IconButton onClick={handleDecrement} size="small">
-                <RemoveIcon />
-            </IconButton>
-            <TextField
+        <div className="flex items-center">
+            <button
+                type="button"
+                onClick={handleDecrement}
+                className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-l bg-gray-50 hover:bg-gray-100 focus:scale-125 transition-colors"
+                disabled={quantity <= 1}
+            >
+                <span className="text-gray-500 font-bold">−</span>
+            </button>
+
+            <input
+                type="text"
                 value={quantity}
                 onChange={handleChange}
-                sx={{
-                    width: "48px",
-                    "& input": {
-                        textAlign: 'center',
-                    }
-                }}
+                onBlur={handleBlur}
+                className="w-12 h-8 border-y border-gray-300 text-center"
+                aria-label="Quantity"
             />
-            <IconButton onClick={handleIncrement} size="small">
-                <AddIcon />
-            </IconButton>
-        </Box>
+
+            <button
+                type="button"
+                onClick={handleIncrement}
+                className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r bg-gray-50 hover:bg-gray-100 focus:scale-125 transition-colors"
+                disabled={quantity >= 100}
+            >
+                <span className="text-gray-500 font-bold">+</span>
+            </button>
+        </div>
     )
 }
-export default SmallQuantitySelector;
+export default QuantitySelector;

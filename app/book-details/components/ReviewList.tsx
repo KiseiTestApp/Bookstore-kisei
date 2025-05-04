@@ -8,6 +8,7 @@ import {ReviewForm} from "@/app/book-details/components/ReviewForm";
 import Grid from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
 import {Timestamp} from "firebase/firestore";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 type ReviewListProps = {
     bookId: string;
@@ -20,6 +21,7 @@ export default function ReviewList({bookId, averageRating, reviewCount}: ReviewL
     const {reviews, isLoading, errors} = useBookReviews(bookId);
     const {user} = useAuth();
     const {openReviewDialog} = ReviewForm(bookId);
+    const isMobile = useMediaQuery("(max-width: 600px)");
     if (isLoading) return <CircularProgress/>;
     if (errors) return <Alert severity='error'>Lỗi gặp phải khi tải đánh giá: {errors}</Alert>;
 
@@ -31,7 +33,7 @@ export default function ReviewList({bookId, averageRating, reviewCount}: ReviewL
         <Box bgcolor='white' borderRadius='md' padding={2}>
             <Box>
                 <Typography variant='h6' color='textPrimary'>Đánh giá sản phẩm</Typography>
-                <Box display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' paddingY={2}>
+                <Box display='flex' flexDirection={isMobile ? 'column' : 'row'} justifyContent='space-around' alignItems='center' paddingY={2} gap={2}>
                     <Box textAlign='center'>
                         <Typography variant='h5'>
                             {averageRating}/5

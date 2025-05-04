@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import dynamic from "next/dynamic";
 import CartItemsList from "@/app/cart/component/CartItemsList";
@@ -27,6 +27,8 @@ export default function CartContent() {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const { user } = useAuth();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fetchCartData = async () => {
         if (!user) return;
@@ -62,55 +64,102 @@ export default function CartContent() {
         )
     }
 
+    const renderCartContent = () => {
+        if (isLoading) {
+            return (
+                <Box className="bg-white flex items-center py-4 justify-center rounded-sm" flexDirection="column">
+                    <MoonLoader color={theme.palette.primary.main} />
+                </Box>
+            );
+        }
+
+        if (cartData.items.length === 0) {
+            return (
+                <Box className="bg-white flex items-center py-4 justify-center rounded-sm" flexDirection="column">
+                    <LottieAnimation />
+                    <Typography variant="h6" color="textPrimary">
+                        Chưa có sản phẩm nào trong giỏ hàng
+                    </Typography>
+                </Box>
+            );
+        }
+
+        return (
+            <Stack spacing={2}>
+                {!isMobile && (
+                    <Box className="bg-white p-6 rounded-sm hidden sm:block">
+                        <Box className={isMobile ? "grid grid-cols-1" : "grid grid-cols-12"}>
+                            <div className={isMobile ? "mb-2" : "col-span-5"}>Sản phẩm</div>
+                            <div className={isMobile ? "mb-2" : "col-span-3 place-self-center"}>Số lượng</div>
+                            <div className={isMobile ? "mb-2" : "col-span-3 place-self-center"}>Thành tiền</div>
+                            <div className={isMobile ? "" : "col-span-1"}></div>
+                        </Box>
+                    </Box>
+                )}
+                <Box className="bg-white px-3 sm:px-6 py-2 rounded-sm">
+                    <CartItemsList items={cartData.items} onItemDelete={fetchCartData} />
+                </Box>
+            </Stack>
+        );
+    };
+
+    const renderOrderSummary = () => {
+        if (isLoading || cartData.items.length === 0) return null;
+
+        return (
+            <Box className="bg-white p-4 rounded-sm">
+                <Box className="flex flex-row justify-between" sx={{ pb: 1}}>
+                    <Typography variant="body2" color="textSecondary">Tổng tiền hàng</Typography>
+                    <Typography variant="body1" color="textPrimary">
+                        {cartData.total.toLocaleString('vi-VN')} VNĐ
+                    </Typography>
+                </Box>
+                <Divider />
+                <Box className="flex flex-row justify-between items-center" sx={{ py: 1}}>
+                    <Typography variant="body1" color="textSecondary">Tổng thanh toán</Typography>
+                    <Typography variant="h6" color={theme.palette.primary.dark}>
+                        {cartData.total.toLocaleString('vi-VN')} VNĐ
+                    </Typography>
+                </Box>
+                <Button variant="contained" color="primary" fullWidth onClick={() => router.push("/checkout")}>
+                    Đặt hàng
+                </Button>
+            </Box>
+        );
+    };
+
     return (
-        <Grid container spacing={2}>
-            <Grid size={!isLoading && cartData.items.length > 0 ? 9 : 12}>
-                {isLoading ? (
-                    <Box className="bg-white flex items-center py-4 justify-center rounded-sm" flexDirection="column">
-                        <MoonLoader color={theme.palette.primary.main} />
-                    </Box>
-                ) : cartData.items.length === 0 ? (
-                    <Box className="bg-white flex items-center py-4 justify-center rounded-sm" flexDirection="column">
-                        <LottieAnimation />
-                        <Typography variant="h6" color="textPrimary">
-                            Chưa có sản phẩm nào trong giỏ hàng
-                        </Typography>
-                    </Box>
-                ) : (
-                    <Stack spacing={2}>
-                        <Box className="bg-white p-6 rounded-sm grid grid-cols-12">
-                            <div className="col-span-5">Sản phẩm</div>
-                            <div className="col-span-3 place-self-center">Số lượng</div>
-                            <div className="col-span-3 place-self-center">Thành tiền</div>
-                        </Box>
-                        <Box className="bg-white px-6 rounded-sm">
-                            <CartItemsList items={cartData.items} onItemDelete={fetchCartData} />
-                        </Box>
-                    </Stack>
+        <Box className="w-full pb-20 md:pb-0">
+            <Grid container spacing={2}>
+                <Grid size={{
+                    xs: 12,
+                    md: (!isLoading && cartData.items.length > 0 ? 8 : 12),
+                    lg: (!isLoading && cartData.items.length > 0 ? 9 : 12),
+                }}>
+                    {renderCartContent()}
+                </Grid>
+
+                {!isLoading && cartData.items.length > 0 && !isMobile && (
+                    <Grid size={{ xs: 12, md: 4, lg: 3}}>
+                        {renderOrderSummary()}
+                    </Grid>
                 )}
             </Grid>
-            {!isLoading && cartData.items.length > 0 && (
-                <Grid size={3}>
-                    <Box className="bg-white p-4 rounded-sm">
-                        <Box className="flex flex-row justify-between" sx={{ pb: 1}}>
-                            <Typography variant="body2" color="textSecondary">Tổng tiền hàng</Typography>
-                            <Typography variant="body1" color="textPrimary">
-                                {cartData.total.toLocaleString('vi-VN')} VNĐ
-                            </Typography>
-                        </Box>
-                        <Divider />
-                        <Box className="flex flex-row justify-between items-center" sx={{ py: 1}}>
-                            <Typography variant="body1" color="textSecondary">Tổng thanh toán</Typography>
-                            <Typography variant="h6" color={theme.palette.primary.dark}>
-                                {cartData.total.toLocaleString('vi-VN')} VNĐ
-                            </Typography>
-                        </Box>
-                        <Button variant="contained" color="primary" fullWidth onClick={() => router.push("/checkout")}>
-                            Đặt hàng
-                        </Button>
+
+
+            {!isLoading && cartData.items.length > 0 && isMobile && (
+                <Box className="fixed bottom-0 left-0 right-0 bg-white p-3 shadow-lg z-10 border-t border-gray-200">
+                    <Box className="flex justify-between items-center mb-2">
+                        <Typography variant="body1" color="textSecondary">Tổng thanh toán:</Typography>
+                        <Typography variant="h6" color={theme.palette.primary.dark}>
+                            {cartData.total.toLocaleString('vi-VN')} VNĐ
+                        </Typography>
                     </Box>
-                </Grid>
+                    <Button variant="contained" color="primary" fullWidth onClick={() => router.push("/checkout")}>
+                        Đặt hàng
+                    </Button>
+                </Box>
             )}
-        </Grid>
+        </Box>
     );
 }
