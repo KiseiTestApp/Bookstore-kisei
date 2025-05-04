@@ -57,7 +57,7 @@ const CartItemsList = ({items, onItemDelete = () => {}} : Props) => {
                         <Box className="flex flex-col justify-between ml-3">
                             <Typography variant="body2" color="textPrimary" style={{ wordWrap: 'break-word'}}>{item.title}</Typography>
                             {item.discounted > 0 ? (
-                                <Box className="flex flex-row gap-3 items-center">
+                                <Box display="flex" flexDirection="row" gap={2} alignItems='center'>
                                     <Typography variant="body1" color="textPrimary" sx={{ fontSize: '18px'}}>{item.discounted.toLocaleString('vi-VN')} VNĐ</Typography>
                                     <Typography variant="subtitle2" color="textSecondary" sx={{ textDecoration: 'line-through'}}>{item.price.toLocaleString('vi-VN')} VNĐ</Typography>
                                 </Box>
@@ -72,11 +72,13 @@ const CartItemsList = ({items, onItemDelete = () => {}} : Props) => {
                         <Box className={isMobile ? 'flex items-center' : 'col-span-3 place-self-center'}>
                             <QuantitySelector bookId={item.bookId} onQuantityChange={handleQuantityChanged} />
                         </Box>
-                        <Box className={isMobile ? 'flex items-center' : 'col-span-3 place-self-center'}>
-                            <Typography variant="body1" color={theme.palette.primary.dark} fontWeight={500}>
-                                {Math.round((item.discounted || item.price) * item.quantity).toLocaleString('vi-VN')} VNĐ
-                            </Typography>
-                        </Box>
+                        {!isMobile && (
+                            <Box className="col-span-3 place-self-center">
+                                <Typography variant="body1" color={theme.palette.primary.dark} fontWeight={500}>
+                                    {Math.round((item.discounted || item.price) * item.quantity).toLocaleString('vi-VN')} VNĐ
+                                </Typography>
+                            </Box>
+                        )}
                         <Box className={isMobile ? 'flex items-center' : 'col-span-1 place-self-center'}>
                             <Button onClick={() => handleDeleteItem(item.bookId)} variant="text" color="error">
                                 Xóa

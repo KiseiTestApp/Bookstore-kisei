@@ -40,18 +40,13 @@ const QuantitySelector = ({ bookId, onQuantityChange} : QuantityProps) => {
         }
     };
 
-    const handleIncrement = () => {
-        const newQuantity = quantity + 1;
-        if (newQuantity <= 100) {
+    const handleQuantityAdjustment = (change: number) => {
+        const newQuantity = quantity + change;
+        if (newQuantity >= 1 && newQuantity <= 100) {
             handleUpdateQuantity(newQuantity);
         }
     };
-    const handleDecrement = () => {
-        const newQuantity = quantity - 1;
-        if (newQuantity >= 0) {
-            handleUpdateQuantity(newQuantity);
-        }
-    }
+
     const handleChange = (event : React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value);
         if (!isNaN(value) && value >= 0 && value <= 100) {
@@ -75,7 +70,7 @@ const QuantitySelector = ({ bookId, onQuantityChange} : QuantityProps) => {
         <div className="flex items-center">
             <button
                 type="button"
-                onClick={handleDecrement}
+                onClick={() => handleQuantityAdjustment(-1)}
                 className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-l bg-gray-50 hover:bg-gray-100 focus:scale-125 transition-colors"
                 disabled={quantity <= 1}
             >
@@ -93,7 +88,7 @@ const QuantitySelector = ({ bookId, onQuantityChange} : QuantityProps) => {
 
             <button
                 type="button"
-                onClick={handleIncrement}
+                onClick={() => handleQuantityAdjustment(1)}
                 className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r bg-gray-50 hover:bg-gray-100 focus:scale-125 transition-colors"
                 disabled={quantity >= 100}
             >
