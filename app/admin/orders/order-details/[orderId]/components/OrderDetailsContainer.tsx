@@ -14,6 +14,9 @@ import CheckoutSummary from "@/app/admin/orders/components/CheckoutSummary";
 import {useSnackbar} from "@/app/context/SnackbarContext";
 import {updateOrderStatus} from "@/app/utils/orders/fetchAllOrders";
 import OrderStatusDialog from "@/app/admin/orders/components/OrderStatusDialog";
+import InvoiceDocument from "@/app/admin/orders/order-details/[orderId]/components/InvoiceDocument";
+import {PDFDownloadLink} from "@react-pdf/renderer";
+import PrintIcon from "@mui/icons-material/Print";
 
 
 export default function OrderDetails() {
@@ -74,6 +77,15 @@ export default function OrderDetails() {
                     }}>
                         Hủy đơn hàng
                     </Button>
+                    <PDFDownloadLink
+                        document={<InvoiceDocument order={order} />}
+                        fileName={`hoa_don_${orderId}.pdf`}
+                        style={{ textDecoration: "none" }}
+                    >
+                        <Button variant='outlined' color='info' startIcon={<PrintIcon />}>
+                            Tạo hóa đơn
+                        </Button>
+                    </PDFDownloadLink>
                 </Box>
             </Box>
             <Box>

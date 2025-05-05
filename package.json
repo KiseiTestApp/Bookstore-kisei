@@ -21,6 +21,7 @@
     "@mui/material-nextjs": "^6.4.3",
     "@mui/x-data-grid": "^7.27.3",
     "@netlify/plugin-nextjs": "^5.10.6",
+    "@react-pdf/renderer": "^4.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookie": "^1.0.2",
