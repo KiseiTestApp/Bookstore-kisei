@@ -56,7 +56,7 @@ const ProductContainer = ({ books } : BookProps) => {
                     {books.map((book) => (
                         <Grid
                             key={book.id}
-                            size={{xs: 12, md: 6, xl: 3}}
+                            size={{xs: 12, sm: 6, md: 4, xl: 3}}
                             className="items-start"
                         >
                             
