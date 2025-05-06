@@ -1,6 +1,9 @@
 import {Document, Page, Text, View, StyleSheet, Font} from "@react-pdf/renderer";
 import {OrderDocument} from "@/app/types/order";
-
+import {
+    paymentMethodMap,
+    shippingMethodMap,
+} from "@/app/utils/orders/orderDisplayMapping";
 
 Font.register({
     family: 'Inconsolata',
@@ -35,22 +38,24 @@ export default function InvoiceDocument({order}: OrderDocumentProps) {
                 <Text style={styles.header}>INVOICE</Text>
 
                 <View style={styles.section}>
-                    <Text>Người mua hàng: </Text>
-                    <Text>{order.customer.customer_name}</Text>
-                    <Text>{order.customer.customer_phone}</Text>
+                    <Text>Khách hàng: </Text>
+                    <Text>Tên khách hàng: {order.customer.customer_name}</Text>
+                    <Text>Số điện thoại: {order.customer.customer_phone}</Text>
+                    <Text>Địa chỉ giao hàng: {order.shippingAddress.fullAddress}</Text>
                 </View>
 
                 <View style={styles.section}>
                     <Text>Mã hóa đơn: {order.orderId}</Text>
                     <Text>Ngày đặt hàng: {order.createdAt.toDate().toLocaleString()}</Text>
-                    <Text></Text>
+                    <Text>Hình thức thanh toán: {paymentMethodMap[order.paymentMethod].display}</Text>
+                    <Text>Phương thức giao hàng: {shippingMethodMap[order.shippingMethod].display}</Text>
                 </View>
 
                 <View style={styles.section}>
                     <Text>Bên tạo hóa đơn:</Text>
                     <Text>Read&Chill</Text>
-                    <Text>30 Hùng Vương - Tự Nhiên - Thường Tín</Text>
-                    <Text>0384484103</Text>
+                    <Text>Địa chỉ: 30 Hùng Vương - Tự Nhiên - Thường Tín</Text>
+                    <Text>Điện thoại: 0384484103</Text>
                 </View>
 
                 <View style={styles.tableHeader}>
